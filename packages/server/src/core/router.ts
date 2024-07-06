@@ -163,7 +163,7 @@ export type StorageRouter = Record<string, Builder<AnyDef, AnyMiddlewareArgs>>;
 
 export const createStorageRouter = <
   TMiddlewareArgs extends AnyMiddlewareArgs,
-  TOutput extends StorageRouter = StorageRouter,
+  TOutput,
 >(
   func: (storage: typeof builder<TMiddlewareArgs>) => TOutput,
 ) => func(builder);
