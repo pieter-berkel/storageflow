@@ -1,0 +1,15 @@
+{
+  "name": "storageflow",
+  "private": true,
+  "packageManager": "pnpm@9.4.0",
+  "scripts": {
+    "build": "turbo run build --filter=@storageflow/*",
+    "clean": "turbo run clean && git clean -xdf node_modules .turbo",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "@storageflow/prettier-config": "workspace:*",
+    "turbo": "^2.0.6"
+  },
+  "prettier": "@storageflow/prettier-config"
+}

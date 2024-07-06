@@ -1,0 +1,29 @@
+{
+  "name": "@storageflow/shared",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "git clean -xdf .turbo dist node_modules",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@storageflow/eslint-config": "workspace:*",
+    "@storageflow/ts-config": "workspace:*",
+    "@types/node": "^20.14.9",
+    "eslint": "^9.6.0",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.2"
+  }
+}
