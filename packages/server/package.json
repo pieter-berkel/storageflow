@@ -1,6 +1,6 @@
 {
   "name": "@storageflow/server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "exports": {
@@ -8,14 +8,11 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./adapter/next/app": {
-      "import": "./dist/adapter/next/app/index.js"
+    "./next": {
+      "import": "./dist/next/index.js"
     },
     "./provider/aws": {
       "import": "./dist/provider/aws/index.js"
-    },
-    "./router/next/app": {
-      "import": "./dist/router/next/app/index.js"
     }
   },
   "types": "./dist/index.d.ts",
@@ -52,16 +49,16 @@
     }
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.600.0",
-    "@aws-sdk/s3-request-presigner": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.609.0",
+    "@aws-sdk/s3-request-presigner": "^3.609.0",
     "@storageflow/eslint-config": "workspace:*",
     "@storageflow/ts-config": "workspace:*",
     "@types/lodash": "^4.17.5",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "eslint": "^9.6.0",
     "next": "14.2.4",
     "tsup": "^8.1.0",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "zod": "^3.23.8"
   }
 }

@@ -1,44 +1,12 @@
-export type MaybePromise<TType> = Promise<TType> | TType;
+import type { RequestUploadResponse } from "~/core/request-upload";
+import type { FileInfo } from "~/validations";
 
-export type Simplify<TType> = TType extends any[] | Date
-  ? TType
-  : { [K in keyof TType]: TType[K] };
-
-export type FileInfo = {
-  name: string;
-  size: number;
-  type: string;
+type RequestUploadArgs = {
+  fileInfo: FileInfo;
+  filePath: string;
 };
 
-export type RequestUploadParams = {
-  file: FileInfo;
-};
-
-type RequestSingleUploadResponse = {
-  type: "single";
-  url: string;
-  uploadUrl: string;
-};
-
-type RequestMultipartUploadResponse = {
-  type: "multipart";
-  url: string;
-  key: string;
-  multipart: {
-    uploadId: string;
-    partSize: number;
-    parts: {
-      partNumber: number;
-      uploadUrl: string;
-    }[];
-  };
-};
-
-export type RequestUploadResponse =
-  | RequestSingleUploadResponse
-  | RequestMultipartUploadResponse;
-
-export type CompleteMultipartUploadParams = {
+type CompleteMultipartUploadArgs = {
   uploadId: string;
   key: string;
   parts: {
@@ -48,10 +16,6 @@ export type CompleteMultipartUploadParams = {
 };
 
 export type Provider = {
-  requestUpload: (
-    params: RequestUploadParams,
-  ) => MaybePromise<RequestUploadResponse>;
-  completeMultipartUpload: (
-    params: CompleteMultipartUploadParams,
-  ) => MaybePromise<void>;
+  requestUpload: (args: RequestUploadArgs) => Promise<RequestUploadResponse>;
+  completeMultipartUpload: (args: CompleteMultipartUploadArgs) => Promise<void>;
 };

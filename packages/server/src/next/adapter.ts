@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { STORAGE_ERROR_CODES, StorageError } from "@storageflow/shared";
 
-import type {
-  CompleteMultipartUploadParams,
-  Provider,
-  RequestUploadParams,
-} from "../../../provider/types";
-import { StorageRouter } from "~/core/router";
+import type { StorageRouter } from "~/core/router";
+import type { Provider } from "~/provider/types";
+import { completeMultipartUpload } from "~/core/complete-multipart-upload";
+import { requestUpload } from "~/core/request-upload";
 import { AWSProvider } from "~/provider/aws";
 
 export type StorageHandlerConfig = {
@@ -16,7 +14,7 @@ export type StorageHandlerConfig = {
 };
 
 export const createStorageHandler = (config: StorageHandlerConfig) => {
-  const { provider = AWSProvider() } = config;
+  const { provider = AWSProvider(), router } = config;
 
   return async (request: NextRequest) => {
     try {
@@ -27,14 +25,23 @@ export const createStorageHandler = (config: StorageHandlerConfig) => {
       }
 
       if (pathname.endsWith("/request-upload")) {
-        const json = (await request.json()) as RequestUploadParams;
-        const response = await provider.requestUpload(json);
+        const response = await requestUpload({
+          router,
+          provider,
+          request,
+          body: await request.json(),
+        });
+
         return NextResponse.json(response);
       }
 
       if (pathname.endsWith("/complete-multipart-upload")) {
-        const json = (await request.json()) as CompleteMultipartUploadParams;
-        await provider.completeMultipartUpload(json);
+        await completeMultipartUpload({
+          router,
+          provider,
+          body: await request.json(),
+        });
+
         return new Response(null, { status: 204 });
       }
 

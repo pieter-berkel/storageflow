@@ -10,14 +10,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@storageflow/server": "workspace:*",
+    "@aws-sdk/client-s3": "^3.609.0",
+    "@aws-sdk/s3-request-presigner": "^3.609.0",
     "@storageflow/react": "workspace:*",
-    "@aws-sdk/client-s3": "^3.600.0",
-    "@aws-sdk/s3-request-presigner": "^3.600.0",
+    "@storageflow/server": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.395.0",
+    "lucide-react": "^0.400.0",
     "next": "14.2.4",
     "next-themes": "^0.3.0",
     "react": "^18",
@@ -28,14 +28,14 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@storageflow/eslint-config": "workspace:*",
     "@types/lodash": "^4.17.5",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^9.6.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "@storageflow/eslint-config": "workspace:*",
-    "eslint": "^9.6.0",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.3"
   }
 }

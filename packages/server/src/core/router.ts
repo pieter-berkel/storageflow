@@ -8,7 +8,7 @@ export type MaxSize = number;
 
 export type AnyMaxSize = MaxSize;
 
-export type AnyInput = z.ZodTypeAny;
+export type AnyInput = z.ZodTypeAny | z.ZodNever;
 
 export type MiddlewareArgs<TRequest, TResponse> = {
   request: TRequest;
@@ -26,7 +26,7 @@ export type Middleware<
   input: z.infer<TInput>;
 }) => any;
 
-export type AnyMiddleware = Middleware<AnyMiddlewareArgs, AnyInput>;
+export type AnyMiddleware = Middleware<AnyMiddlewareArgs, never>;
 
 export type Path<
   TInput extends AnyInput,
@@ -36,7 +36,7 @@ export type Path<
   metadata: Awaited<ReturnType<TMiddleware>>;
 }) => string | undefined;
 
-export type AnyPath = Path<AnyInput, AnyMiddleware>;
+export type AnyPath = Path<never, AnyMiddleware>;
 
 export type Def<
   TAccept extends AnyAccept,
@@ -160,10 +160,3 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
 };
 
 export type StorageRouter = Record<string, Builder<AnyDef, AnyMiddlewareArgs>>;
-
-export const createStorageRouter = <
-  TMiddlewareArgs extends AnyMiddlewareArgs,
-  TOutput,
->(
-  func: (storage: typeof builder<TMiddlewareArgs>) => TOutput,
-) => func(builder);

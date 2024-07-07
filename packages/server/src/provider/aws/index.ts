@@ -10,7 +10,6 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { StorageError } from "@storageflow/shared";
 
 import type { Provider } from "../types";
-import { generateUniqueFileKey } from "../../utils";
 
 export type AWSProviderOptions = {
   baseURL?: string;
@@ -50,26 +49,26 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
   const s3Client = getS3Client(options);
 
   return {
-    requestUpload: async ({ file }) => {
-      const key = generateUniqueFileKey(file.name);
+    requestUpload: async ({ fileInfo, filePath }) => {
+      const key = filePath.startsWith("/") ? filePath.slice(1) : filePath;
 
       const MULTIPART_THRESHOLD = 10 * 1024 * 1024; // 10MB
       let partSize = 5 * 1024 * 1024; // 5MB
 
-      if (file.size > MULTIPART_THRESHOLD) {
-        let totalParts = Math.ceil(file.size / partSize);
+      if (fileInfo.size > MULTIPART_THRESHOLD) {
+        let totalParts = Math.ceil(fileInfo.size / partSize);
 
         // the maximum number of parts is 1000
         if (totalParts > 1000) {
           totalParts = 1000;
-          partSize = Math.ceil(file.size / totalParts);
+          partSize = Math.ceil(fileInfo.size / totalParts);
         }
 
         const command = new CreateMultipartUploadCommand({
           Bucket: bucketName,
           Key: key,
           ACL: "public-read",
-          ContentType: file.type,
+          ContentType: fileInfo.type,
         });
 
         const { UploadId } = await s3Client.send(command);
@@ -117,8 +116,8 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
         Bucket: bucketName,
         Key: key,
         ACL: "public-read",
-        ContentLength: file.size,
-        ContentType: file.type,
+        ContentLength: fileInfo.size,
+        ContentType: fileInfo.type,
       });
 
       const signedUrl = await getSignedUrl(s3Client, command, {

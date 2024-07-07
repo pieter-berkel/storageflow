@@ -1,6 +1,6 @@
 {
   "name": "@storageflow/shared",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "exports": {
@@ -21,9 +21,9 @@
   "devDependencies": {
     "@storageflow/eslint-config": "workspace:*",
     "@storageflow/ts-config": "workspace:*",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "eslint": "^9.6.0",
     "tsup": "^8.1.0",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.3"
   }
 }

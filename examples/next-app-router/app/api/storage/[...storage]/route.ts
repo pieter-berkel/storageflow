@@ -1,14 +1,16 @@
 import { z } from "zod";
 
-import { createStorageHandler } from "@storageflow/server/adapter/next/app";
+import {
+  createStorageHandler,
+  createStorageRouter,
+} from "@storageflow/server/next";
 import { AWSProvider } from "@storageflow/server/provider/aws";
-import { createStorageRouter } from "@storageflow/server/router/next/app";
 
 const router = createStorageRouter((storage) => ({
   banner: storage()
     .input(
       z.object({
-        category: z.string().uuid(),
+        category: z.string(),
       }),
     )
     .middleware(async ({ input, request }) => {
