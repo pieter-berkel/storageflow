@@ -3,7 +3,6 @@ import { Inter as FontSans } from "next/font/google";
 
 import "./globals.css";
 
-import { StorageProvider } from "~/components/storage";
 import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
 
@@ -26,11 +25,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "bg-background min-h-screen font-sans antialiased",
           fontSans.variable,
         )}
       >
-        <StorageProvider>{children}</StorageProvider>
+        {children}
         <Toaster />
       </body>
     </html>

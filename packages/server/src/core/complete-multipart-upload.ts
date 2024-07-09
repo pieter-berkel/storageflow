@@ -1,10 +1,10 @@
 import type { StorageRouter } from "./router";
 import type { Provider } from "~/provider/types";
 
-type RequestUploadBody = {
+export type CompleteMultipartUploadBody = {
   route: string;
   uploadId: string;
-  key: string;
+  filepath: string;
   parts: {
     partNumber: number;
     eTag: string;
@@ -14,10 +14,10 @@ type RequestUploadBody = {
 type CompleteMultipartUploadArgs = {
   router: StorageRouter;
   provider: Provider;
-  body: RequestUploadBody;
+  body: CompleteMultipartUploadBody;
 };
 
-type CompleteMultipartUploadResponse = void;
+export type CompleteMultipartUploadResponse = void;
 
 export const completeMultipartUpload = async (
   args: CompleteMultipartUploadArgs,
@@ -32,7 +32,7 @@ export const completeMultipartUpload = async (
 
   return await provider.completeMultipartUpload({
     uploadId: body.uploadId,
-    key: body.key,
+    filepath: body.filepath,
     parts: body.parts,
   });
 };

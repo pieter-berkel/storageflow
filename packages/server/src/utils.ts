@@ -11,7 +11,7 @@ export const generateRandomString = (length: number) => {
   return result;
 };
 
-export const generateUniqueFileKey = (filename: string) => {
+export const generateUniqueFilename = (filename: string) => {
   const parts = filename.split(".");
   const extension =
     parts.length > 1 ? `.${parts.pop()?.toLowerCase()}` : undefined;

@@ -1,9 +1,10 @@
 //@ts-nocheck
-
 import * as React from "react";
 
 import type { RequestUploadResponse, StorageRouter } from "@storageflow/server";
 import { queuedPromises } from "@storageflow/shared";
+
+export { createStorageFlowReact } from "./react";
 
 type UploadStatus = "idle" | "pending" | "error" | "success";
 
@@ -98,7 +99,7 @@ export const createStorageReact = <TRouter extends StorageRouter>() => {
   });
 };
 
-const uploadFile = async ({
+const auploadFile = async ({
   file,
   basePath,
   onProgressChange,

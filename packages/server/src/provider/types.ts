@@ -3,12 +3,13 @@ import type { FileInfo } from "~/validations";
 
 type RequestUploadArgs = {
   fileInfo: FileInfo;
-  filePath: string;
+  filename: string;
+  filepath: string;
 };
 
 type CompleteMultipartUploadArgs = {
   uploadId: string;
-  key: string;
+  filepath: string;
   parts: {
     partNumber: number;
     eTag: string;

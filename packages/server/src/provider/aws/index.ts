@@ -49,8 +49,8 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
   const s3Client = getS3Client(options);
 
   return {
-    requestUpload: async ({ fileInfo, filePath }) => {
-      const key = filePath.startsWith("/") ? filePath.slice(1) : filePath;
+    requestUpload: async ({ fileInfo, filepath }) => {
+      const key = filepath.startsWith("/") ? filepath.slice(1) : filepath;
 
       const MULTIPART_THRESHOLD = 10 * 1024 * 1024; // 10MB
       let partSize = 5 * 1024 * 1024; // 5MB
@@ -103,7 +103,7 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
         return {
           type: "multipart",
           url: `${baseUrl}/${key}`,
-          key,
+          filepath,
           multipart: {
             uploadId: UploadId,
             parts,
@@ -128,10 +128,13 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
         type: "single",
         url: `${baseUrl}/${key}`,
         uploadUrl: signedUrl,
+        filepath,
       };
     },
     completeMultipartUpload: async (params) => {
-      const { uploadId, key, parts } = params;
+      const { uploadId, filepath, parts } = params;
+
+      const key = filepath.startsWith("/") ? filepath.slice(1) : filepath;
 
       const command = new CompleteMultipartUploadCommand({
         Bucket: bucketName,

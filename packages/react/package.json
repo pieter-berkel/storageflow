@@ -19,7 +19,8 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@storageflow/shared": "workspace:*"
+    "@storageflow/shared": "workspace:*",
+    "zod": "^3.23.8"
   },
   "peerDependencies": {
     "@storageflow/server": "workspace:*",

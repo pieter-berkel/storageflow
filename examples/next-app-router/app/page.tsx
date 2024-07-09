@@ -7,8 +7,7 @@ import { Input } from "~/components/ui/input";
 import { storage } from "~/lib/storage";
 
 export default function Page() {
-  const { upload, reset, state, data, error, progress } =
-    storage.banner.useUpload();
+  const { upload } = storage.banner.useUpload();
 
   const [file, setFile] = React.useState<File | null>(null);
 
@@ -19,7 +18,7 @@ export default function Page() {
       return;
     }
 
-    toast.promise(upload(file), {
+    toast.promise(upload(file, { category: "cats" }), {
       loading: "Uploading...",
       success: "Upload successful",
       error: (error) => toast.error(error.message),
@@ -30,11 +29,8 @@ export default function Page() {
     <div className="container py-8">
       <form>
         <Input type="file" onChange={(e) => setFile(e.target.files?.[0])} />
-        <div>Progress: {progress}%</div>
+        <div>Progress: {0}%</div>
         <button onClick={handleSubmit}>Verzenden</button>
-        <button type="button" onClick={reset}>
-          Reset
-        </button>
       </form>
     </div>
   );

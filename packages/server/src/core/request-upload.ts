@@ -1,6 +1,6 @@
 import type { StorageRouter } from "~/core/router";
 import type { Provider } from "~/provider/types";
-import { generateUniqueFileKey } from "~/utils";
+import { generateUniqueFilename } from "~/utils";
 import { FileInfo, fileInfoSchema } from "~/validations";
 
 export type RequestUploadBody = {
@@ -18,12 +18,14 @@ type RequestUploadArgs = {
 
 type RequestSingleUploadResponse = {
   url: string;
+  filepath: string;
   type: "single";
   uploadUrl: string;
 };
 
 type RequestMultipartUploadResponse = {
   type: "multipart";
+  filepath: string;
   multipart: {
     uploadId: string;
     partSize: number;
@@ -61,14 +63,7 @@ export const requestUpload = async (
 
   const accept = route._def.accept;
   if (accept) {
-    const regex = /^\w+\/([\w\.\-\+]+|\*)$/gm;
-
     const accepted = accept.some((mime) => {
-      // check if the route has valid accept entries
-      if (!regex.test(mime)) {
-        throw new Error(`Route ${body.route} has invalid accept entry ${mime}`);
-      }
-
       const [type, subtype] = mime.split("/") as [string, string];
 
       if (subtype === "*") {
@@ -137,11 +132,12 @@ export const requestUpload = async (
     }
   }
 
-  const key = generateUniqueFileKey(fileInfo.name);
-  const filePath = `${dir}/${key}`;
+  const filename = generateUniqueFilename(fileInfo.name);
+  const filepath = `${dir}/${filename}`;
 
   return await provider.requestUpload({
     fileInfo,
-    filePath,
+    filename,
+    filepath,
   });
 };

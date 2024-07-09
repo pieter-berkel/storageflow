@@ -99,6 +99,9 @@ importers:
       '@storageflow/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@storageflow/eslint-config':
         specifier: workspace:*
