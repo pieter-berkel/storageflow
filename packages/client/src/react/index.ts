@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import type { StorageRouter } from "@storageflow/server";
 
-import { upload } from "./client";
+import { createStorageFlowClient } from "~/core/client";
 
 type UploadStatus = "idle" | "loading" | "error" | "success";
 
@@ -35,6 +35,10 @@ export const createStorageFlowReact = <TRouter extends StorageRouter>(args?: {
 }) => {
   const { baseUrl } = args ?? {};
 
+  const client = createStorageFlowClient({
+    baseUrl,
+  });
+
   return new Proxy<RouteFunctions<TRouter>>({} as any, {
     get: (_target, key): RouteFunctions<TRouter>[string] => {
       const route = key as string;
@@ -54,10 +58,12 @@ export const createStorageFlowReact = <TRouter extends StorageRouter>(args?: {
                 setData({});
                 setError(null);
 
-                const result = await upload({
+                if (!client[route]) {
+                  throw new Error(`Route ${route} not found`);
+                }
+
+                const result = await client[route].upload({
                   file,
-                  route,
-                  baseUrl,
                   input,
                   onProgressChange: (progress) => {
                     setProgress(progress);

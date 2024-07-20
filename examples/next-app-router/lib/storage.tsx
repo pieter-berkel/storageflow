@@ -1,6 +1,6 @@
 "use client";
 
-import { createStorageFlowReact } from "@storageflow/react";
+import { createStorageFlowReact } from "@storageflow/client/react";
 
 import type { StorageRouter } from "~/app/api/storage/[...storage]/route";
 

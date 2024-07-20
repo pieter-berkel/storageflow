@@ -1,5 +1,5 @@
 {
-  "name": "@storageflow/react",
+  "name": "@storageflow/client",
   "version": "0.1.0",
   "private": false,
   "type": "module",
@@ -7,6 +7,9 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.js"
     }
   },
   "types": "./dist/index.d.ts",

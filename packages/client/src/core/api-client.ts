@@ -6,7 +6,9 @@ import type {
   RequestUploadResponse,
 } from "@storageflow/server";
 
-export const createStorageFlowClient = ({ baseUrl = "/api/storage" } = {}) => {
+export const createStorageFlowApiClient = ({
+  baseUrl = "/api/storage",
+} = {}) => {
   return {
     health: async () => {
       const response = await fetch(`${baseUrl}/health`);

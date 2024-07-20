@@ -133,7 +133,7 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
   const _def: AnyDef = {
     allowedMimeTypes: undefined,
     fileSizeLimit: Infinity,
-    input: z.never(),
+    input: z.never().nullish(),
     middleware: () => ({}),
     path: () => undefined,
     ...initDef,
