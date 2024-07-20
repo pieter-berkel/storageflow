@@ -1,2 +1,2 @@
-export { createStorageHandler, type StorageHandlerConfig } from "./adapter";
+export { createStorageHandler, type StorageHandlerConfig } from "./handler";
 export { createStorageRouter } from "./router";

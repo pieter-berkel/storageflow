@@ -1,4 +1,5 @@
 import type {
+  ApiResponse,
   CompleteMultipartUploadBody,
   CompleteMultipartUploadResponse,
   RequestUploadBody,
@@ -18,7 +19,7 @@ export const createStorageFlowClient = ({ baseUrl = "/api/storage" } = {}) => {
         body: JSON.stringify(args),
       });
 
-      return (await response.json()) as RequestUploadResponse;
+      return (await response.json()) as ApiResponse<RequestUploadResponse>;
     },
 
     completeMultipartUpload: async (args: CompleteMultipartUploadBody) => {
@@ -27,7 +28,7 @@ export const createStorageFlowClient = ({ baseUrl = "/api/storage" } = {}) => {
         body: JSON.stringify(args),
       });
 
-      return (await response.json()) as CompleteMultipartUploadResponse;
+      return (await response.json()) as ApiResponse<CompleteMultipartUploadResponse>;
     },
   };
 };

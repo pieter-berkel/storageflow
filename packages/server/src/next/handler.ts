@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 
-import { STORAGE_ERROR_CODES, StorageError } from "@storageflow/shared";
-
+import type { RequestUploadResponse } from "~/core/request-upload";
 import type { StorageRouter } from "~/core/router";
 import type { Provider } from "~/provider/types";
+import type { ErrorResponse, SuccessResponse } from "~/types";
 import { completeMultipartUpload } from "~/core/complete-multipart-upload";
+import { StorageflowError } from "~/core/error";
 import { requestUpload } from "~/core/request-upload";
 import { AWSProvider } from "~/provider/aws";
 
@@ -32,7 +34,10 @@ export const createStorageHandler = (config: StorageHandlerConfig) => {
           body: await request.json(),
         });
 
-        return NextResponse.json(response);
+        return NextResponse.json<SuccessResponse<RequestUploadResponse>>({
+          status: "success",
+          ...response,
+        });
       }
 
       if (pathname.endsWith("/complete-multipart-upload")) {
@@ -42,24 +47,41 @@ export const createStorageHandler = (config: StorageHandlerConfig) => {
           body: await request.json(),
         });
 
-        return new Response(null, { status: 204 });
+        return NextResponse.json<SuccessResponse>({ status: "success" });
       }
 
       return new Response(null, { status: 404 });
     } catch (error) {
-      if (error instanceof StorageError) {
-        return new Response(error.message, {
-          status: STORAGE_ERROR_CODES[error.code],
-        });
-      } else if (error instanceof Error) {
-        return new Response(error.message, {
-          status: 500,
-        });
-      } else {
-        return new Response("Internal server error", {
-          status: 500,
+      if (error instanceof ZodError) {
+        return NextResponse.json<ErrorResponse>({
+          status: "error",
+          code: "BAD_REQUEST",
+          detail: "Invalid input",
+          fields: error.flatten().fieldErrors as Record<string, string[]>,
         });
       }
+
+      if (error instanceof StorageflowError) {
+        return NextResponse.json<ErrorResponse>({
+          status: "error",
+          code: error.code,
+          detail: error.message,
+        });
+      }
+
+      if (error instanceof Error) {
+        return NextResponse.json<ErrorResponse>({
+          status: "error",
+          code: "INTERNAL_SERVER_ERROR",
+          detail: error.message,
+        });
+      }
+
+      return NextResponse.json<ErrorResponse>({
+        status: "error",
+        code: "INTERNAL_SERVER_ERROR",
+        detail: "Internal server error",
+      });
     }
   };
 };

@@ -7,30 +7,38 @@ import { Input } from "~/components/ui/input";
 import { storage } from "~/lib/storage";
 
 export default function Page() {
-  const { upload } = storage.banner.useUpload();
+  const { upload, status, error, progress } = storage.banner.useUpload();
 
   const [file, setFile] = React.useState<File | null>(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!file) {
-      return;
+      return toast.error("No file selected");
     }
 
-    toast.promise(upload(file, { category: "cats" }), {
-      loading: "Uploading...",
-      success: "Upload successful",
-      error: (error) => toast.error(error.message),
+    upload({
+      file,
+      onError(error) {
+        toast.error(error.message);
+      },
+      onSuccess(data) {
+        toast.success("Upload successful");
+        alert("Here is yout file: " + data.url);
+      },
     });
   };
 
   return (
     <div className="container py-8">
       <form>
+        {/* @ts-expect-error */}
         <Input type="file" onChange={(e) => setFile(e.target.files?.[0])} />
-        <div>Progress: {0}%</div>
-        <button onClick={handleSubmit}>Verzenden</button>
+        <div>Progress: {progress}%</div>
+        <div>Status: {status}</div>
+        <div>Error: {error?.message}</div>
+        <button type="button" onClick={handleSubmit}>
+          Verzenden
+        </button>
       </form>
     </div>
   );

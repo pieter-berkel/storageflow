@@ -1,21 +1,27 @@
+import * as React from "react";
 import { z } from "zod";
 
 import type { StorageRouter } from "@storageflow/server";
 
-import { createStorageFlowClient } from "./api-client";
-import { getFileInfo, queuedPromises, uploadWithProgress } from "./utils";
+import { upload } from "./client";
 
-type createStorageFlowReactArgs = {
-  baseUrl: string;
-};
+type UploadStatus = "idle" | "loading" | "error" | "success";
 
 type UseUpload<TInput extends z.ZodTypeAny> = () => {
+  status: UploadStatus;
+  data: { url?: string };
+  error: Error | null;
+  progress: number;
   upload: (
-    file: File,
-    ...args: TInput extends z.ZodTypeAny
-      ? [input: z.infer<TInput>, options?: any]
-      : [options?: any]
-  ) => Promise<{ url: string }>;
+    args: {
+      file: File;
+      onError?: (error: Error) => void;
+      onSuccess?: (data: { url: string }) => void;
+      onProgressChange?: (progress: number) => void;
+    } & (TInput extends z.ZodNever
+      ? { input?: any }
+      : { input: z.infer<TInput> }),
+  ) => Promise<{ url?: string; error?: Error }>;
 };
 
 type RouteFunctions<TRouter extends StorageRouter> = {
@@ -24,12 +30,10 @@ type RouteFunctions<TRouter extends StorageRouter> = {
   };
 };
 
-export const createStorageFlowReact = <TRouter extends StorageRouter>(
-  args?: createStorageFlowReactArgs,
-) => {
-  const client = createStorageFlowClient({
-    baseUrl: args?.baseUrl,
-  });
+export const createStorageFlowReact = <TRouter extends StorageRouter>(args?: {
+  baseUrl?: string;
+}) => {
+  const { baseUrl } = args ?? {};
 
   return new Proxy<RouteFunctions<TRouter>>({} as any, {
     get: (_target, key): RouteFunctions<TRouter>[string] => {
@@ -37,99 +41,59 @@ export const createStorageFlowReact = <TRouter extends StorageRouter>(
 
       return {
         useUpload: () => {
+          const [status, setStatus] = React.useState<UploadStatus>("idle");
+          const [progress, setProgress] = React.useState<number>(0);
+          const [data, setData] = React.useState<{ url?: string }>({});
+          const [error, setError] = React.useState<Error | null>(null);
+
           return {
-            upload: async (file, ...args) => {
-              const input = args.length === 1 ? args[0] : undefined;
-              const options = args.length === 2 ? args[1] : args[0];
+            upload: async ({ file, input, ...args }) => {
+              try {
+                setStatus("loading");
+                setProgress(0);
+                setData({});
+                setError(null);
 
-              const result = await client.requestUpload({
-                route,
-                input,
-                fileInfo: getFileInfo(file),
-              });
-
-              if (result.type === "single") {
-                await uploadWithProgress(file, result.uploadUrl);
-              } else if (result.type === "multipart") {
-                const { parts, partSize, uploadId } = result.multipart;
-
-                const uploadingParts: {
-                  partNumber: number;
-                  progress: number;
-                }[] = [];
-
-                const uploadPart = async (params: {
-                  part: (typeof parts)[number];
-                  chunk: Blob;
-                }) => {
-                  const { part, chunk } = params;
-
-                  const handleMultipartProgress = (progress: number) => {
-                    const uploadingPart = uploadingParts.find(
-                      (p) => p.partNumber === part.partNumber,
-                    );
-
-                    if (uploadingPart) {
-                      uploadingPart.progress = progress;
-                    } else {
-                      uploadingParts.push({
-                        partNumber: part.partNumber,
-                        progress,
-                      });
-                    }
-
-                    const totalProgress =
-                      Math.round(
-                        uploadingParts.reduce(
-                          (acc, p) => acc + p.progress * 100,
-                          0,
-                        ) / parts.length,
-                      ) / 100;
-
-                    // onProgressChange?.(totalProgress);
-                  };
-
-                  const eTag = await uploadWithProgress(
-                    chunk,
-                    part.uploadUrl,
-                    handleMultipartProgress,
-                  );
-
-                  if (!eTag) {
-                    throw new Error(
-                      "Failed to upload part. Etag is not available.",
-                    );
-                  }
-
-                  return {
-                    partNumber: part.partNumber,
-                    eTag,
-                  };
-                };
-
-                const completedParts = await queuedPromises({
-                  items: parts.map((part) => ({
-                    part,
-                    chunk: file.slice(
-                      (part.partNumber - 1) * partSize,
-                      part.partNumber * partSize,
-                    ),
-                  })),
-                  fn: uploadPart,
-                });
-
-                await client.completeMultipartUpload({
+                const result = await upload({
+                  file,
                   route,
-                  uploadId,
-                  filepath: result.filepath,
-                  parts: completedParts,
+                  baseUrl,
+                  input,
+                  onProgressChange: (progress) => {
+                    setProgress(progress);
+                    args.onProgressChange?.(progress);
+                  },
                 });
-              }
 
-              return {
-                url: result.url,
-              };
+                setStatus("success");
+                setData(result);
+
+                args.onSuccess?.({
+                  url: result.url,
+                });
+
+                return {
+                  url: result.url,
+                };
+              } catch (e) {
+                setStatus("error");
+
+                const err = e instanceof Error ? e : new Error("Unknown error");
+
+                setError(err);
+                setData({});
+
+                args.onError?.(err);
+
+                return {
+                  error: err,
+                };
+              }
             },
+            status,
+            progress,
+            data,
+            error,
           };
         },
       };

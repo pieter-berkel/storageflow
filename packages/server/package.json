@@ -25,7 +25,6 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@storageflow/shared": "workspace:*",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
@@ -49,15 +48,15 @@
     }
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.609.0",
-    "@aws-sdk/s3-request-presigner": "^3.609.0",
+    "@aws-sdk/client-s3": "^3.616.0",
+    "@aws-sdk/s3-request-presigner": "^3.616.0",
     "@storageflow/eslint-config": "workspace:*",
     "@storageflow/ts-config": "workspace:*",
-    "@types/lodash": "^4.17.5",
-    "@types/node": "^20.14.10",
-    "eslint": "^9.6.0",
+    "@types/lodash": "^4.17.7",
+    "@types/node": "^20.14.11",
+    "eslint": "^9.7.0",
     "next": "14.2.4",
-    "tsup": "^8.1.0",
+    "tsup": "^8.2.0",
     "typescript": "^5.5.3",
     "zod": "^3.23.8"
   }

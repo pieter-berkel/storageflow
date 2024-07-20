@@ -2,6 +2,7 @@ import type { StorageRouter } from "~/core/router";
 import type { Provider } from "~/provider/types";
 import { generateUniqueFilename } from "~/utils";
 import { FileInfo, fileInfoSchema } from "~/validations";
+import { StorageflowError } from "./error";
 
 export type RequestUploadBody = {
   route: string;
@@ -49,21 +50,17 @@ export const requestUpload = async (
   const route = router[body.route];
 
   if (!route) {
-    throw new Error(`Route ${body.route} not found`);
+    throw new StorageflowError({
+      code: "NOT_FOUND",
+      message: `Route ${body.route} not found`,
+    });
   }
 
-  const fileInfoResult = fileInfoSchema.safeParse(body.fileInfo);
+  const fileInfo = fileInfoSchema.parse(body.fileInfo);
 
-  if (!fileInfoResult.success) {
-    // TODO: improve error
-    throw new Error(`Invalid file info: ${fileInfoResult.error}`);
-  }
-
-  const fileInfo = fileInfoResult.data;
-
-  const accept = route._def.accept;
-  if (accept) {
-    const accepted = accept.some((mime) => {
+  const allowedMimeTypes = route._def.allowedMimeTypes;
+  if (allowedMimeTypes) {
+    const accepted = allowedMimeTypes.some((mime) => {
       const [type, subtype] = mime.split("/") as [string, string];
 
       if (subtype === "*") {
@@ -74,15 +71,19 @@ export const requestUpload = async (
     });
 
     if (!accepted) {
-      throw new Error(`File type ${fileInfo.type} is not accepted`);
+      throw new StorageflowError({
+        code: "BAD_REQUEST",
+        message: `File type ${fileInfo.type} is not allowedMimeTypesed`,
+      });
     }
   }
 
-  const maxSize = route._def.maxSize;
-  if (maxSize !== Infinity && fileInfo.size > maxSize) {
-    throw new Error(
-      `File size ${fileInfo.size} is larger than max size ${maxSize}`,
-    );
+  const fileSizeLimit = route._def.fileSizeLimit;
+  if (fileSizeLimit !== Infinity && fileInfo.size > fileSizeLimit) {
+    throw new StorageflowError({
+      code: "FILE_LIMIT_EXCEEDED",
+      message: `File size ${fileInfo.size} is larger than max size ${fileSizeLimit}`,
+    });
   }
 
   let input;

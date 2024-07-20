@@ -19,22 +19,20 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@storageflow/shared": "workspace:*",
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "@storageflow/server": "workspace:*",
-    "react": "^18"
+    "react": ">=18"
   },
   "devDependencies": {
     "@storageflow/eslint-config": "workspace:*",
     "@storageflow/server": "workspace:*",
     "@storageflow/ts-config": "workspace:*",
-    "@types/node": "^20.14.10",
-    "@types/react": "^18",
-    "eslint": "^9.6.0",
-    "react": "^18",
-    "tsup": "^8.1.0",
+    "@types/node": "^20.14.11",
+    "@types/react": "^18.3.3",
+    "eslint": "^9.7.0",
+    "react": "^18.3.1",
+    "tsup": "^8.2.0",
     "typescript": "^5.5.3"
   }
 }
