@@ -10,6 +10,7 @@ import type { ErrorResponse, SuccessResponse } from "~/types";
 import { completeMultipartUpload } from "~/core/complete-multipart-upload";
 import { requestUpload } from "~/core/request-upload";
 import { AWSProvider } from "~/provider/aws";
+import { zodErrorToMessage } from "~/utils";
 
 export type StorageHandlerConfig = {
   provider?: Provider;
@@ -57,7 +58,7 @@ export const createStorageHandler = (config: StorageHandlerConfig) => {
         return NextResponse.json<ErrorResponse>({
           status: "error",
           name: "BAD_REQUEST",
-          message: "Invalid input",
+          message: zodErrorToMessage(error),
           fields: error.flatten().fieldErrors as Record<string, string[]>,
         });
       }

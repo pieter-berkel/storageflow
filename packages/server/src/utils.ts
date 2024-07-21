@@ -1,3 +1,4 @@
+import type { ZodError } from "zod";
 import kebabCase from "lodash/kebabCase";
 
 export const generateRandomString = (length: number) => {
@@ -20,4 +21,13 @@ export const generateUniqueFilename = (filename: string) => {
   const key = `${name}_${suffix}${extension}`;
 
   return key;
+};
+
+export const zodErrorToMessage = (error: ZodError) => {
+  return error.errors
+    .map((err) => {
+      if (err.path.length === 0) return err.message;
+      return err.path.join(".") + ": " + err.message;
+    })
+    .join(". ");
 };
