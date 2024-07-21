@@ -7,8 +7,9 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+import { StorageFlowError } from "@storageflow/shared";
+
 import type { Provider } from "../types";
-import { StorageflowError } from "~/core/error";
 
 export type AWSProviderOptions = {
   baseURL?: string;
@@ -25,19 +26,17 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
   } = options ?? {};
 
   if (!bucketName) {
-    throw new StorageflowError({
-      code: "MISSING_ENV",
-      message:
-        "AWS bucket name is required. Set STORAGE_AWS_BUCKET_NAME or pass bucketName to AWSProvider",
-    });
+    throw new StorageFlowError(
+      "MISSING_ENV",
+      "AWS bucket name is required. Set STORAGE_AWS_BUCKET_NAME or pass bucketName to AWSProvider",
+    );
   }
 
   if (!region) {
-    throw new StorageflowError({
-      code: "MISSING_ENV",
-      message:
-        "AWS region is required. Set STORAGE_AWS_REGION or pass region to AWSProvider",
-    });
+    throw new StorageFlowError(
+      "MISSING_ENV",
+      "AWS region is required. Set STORAGE_AWS_REGION or pass region to AWSProvider",
+    );
   }
 
   const baseUrl =
@@ -73,10 +72,10 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
         const { UploadId } = await s3Client.send(command);
 
         if (!UploadId) {
-          throw new StorageflowError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Multipart upload has no UploadId",
-          });
+          throw new StorageFlowError(
+            "INTERNAL_SERVER_ERROR",
+            "Multipart upload has no UploadId",
+          );
         }
 
         const parts = await Promise.all(
@@ -166,27 +165,24 @@ const getS3Client = (config?: S3ClientConfig) => {
   } = config ?? {};
 
   if (!accessKeyId) {
-    throw new StorageflowError({
-      code: "MISSING_ENV",
-      message:
-        "AWS access key is required. Set STORAGE_AWS_ACCESS_KEY_ID or pass accessKeyId to AWSProvider",
-    });
+    throw new StorageFlowError(
+      "MISSING_ENV",
+      "AWS access key is required. Set STORAGE_AWS_ACCESS_KEY_ID or pass accessKeyId to AWSProvider",
+    );
   }
 
   if (!secretAccessKey) {
-    throw new StorageflowError({
-      code: "MISSING_ENV",
-      message:
-        "AWS secret access key is required. Set STORAGE_AWS_SECRET_ACCESS_KEY or pass secretAccessKey to AWSProvider",
-    });
+    throw new StorageFlowError(
+      "MISSING_ENV",
+      "AWS secret access key is required. Set STORAGE_AWS_SECRET_ACCESS_KEY or pass secretAccessKey to AWSProvider",
+    );
   }
 
   if (!region) {
-    throw new StorageflowError({
-      code: "MISSING_ENV",
-      message:
-        "AWS region is required. Set STORAGE_AWS_REGION or pass region to AWSProvider",
-    });
+    throw new StorageFlowError(
+      "MISSING_ENV",
+      "AWS region is required. Set STORAGE_AWS_REGION or pass region to AWSProvider",
+    );
   }
 
   const s3Client = new S3Client({

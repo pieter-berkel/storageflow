@@ -106,6 +106,9 @@ importers:
       '@storageflow/server':
         specifier: workspace:*
         version: link:../server
+      '@storageflow/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@storageflow/ts-config':
         specifier: workspace:*
         version: link:../../tooling/ts-config
@@ -143,6 +146,9 @@ importers:
       '@storageflow/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
+      '@storageflow/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@storageflow/ts-config':
         specifier: workspace:*
         version: link:../../tooling/ts-config
@@ -167,6 +173,30 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.23.8
+
+  packages/shared:
+    devDependencies:
+      '@storageflow/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint-config
+      '@storageflow/ts-config':
+        specifier: workspace:*
+        version: link:../../tooling/ts-config
+      '@types/node':
+        specifier: ^20.14.11
+        version: 20.14.11
+      eslint:
+        specifier: ^9.7.0
+        version: 9.7.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      tsup:
+        specifier: ^8.2.0
+        version: 8.2.0(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.3)(yaml@2.4.5)
+      typescript:
+        specifier: ^5.5.3
+        version: 5.5.3
 
   tooling/eslint-config:
     devDependencies:

@@ -2,6 +2,7 @@ import * as React from "react";
 import { z } from "zod";
 
 import type { StorageRouter } from "@storageflow/server";
+import { StorageFlowError } from "@storageflow/shared";
 
 import { createStorageFlowClient } from "~/core/client";
 
@@ -10,18 +11,18 @@ type UploadStatus = "idle" | "loading" | "error" | "success";
 type UseUpload<TInput extends z.ZodTypeAny> = () => {
   status: UploadStatus;
   data: { url?: string };
-  error: Error | null;
+  error: StorageFlowError | null;
   progress: number;
   upload: (
     args: {
       file: File;
-      onError?: (error: Error) => void;
+      onError?: (error: StorageFlowError) => void;
       onSuccess?: (data: { url: string }) => void;
       onProgressChange?: (progress: number) => void;
     } & (TInput extends z.ZodNever
       ? { input?: any }
       : { input: z.infer<TInput> }),
-  ) => Promise<{ url?: string; error?: Error }>;
+  ) => Promise<{ url?: string; error?: StorageFlowError }>;
 };
 
 type RouteFunctions<TRouter extends StorageRouter> = {
@@ -48,7 +49,9 @@ export const createStorageFlowReact = <TRouter extends StorageRouter>(args?: {
           const [status, setStatus] = React.useState<UploadStatus>("idle");
           const [progress, setProgress] = React.useState<number>(0);
           const [data, setData] = React.useState<{ url?: string }>({});
-          const [error, setError] = React.useState<Error | null>(null);
+          const [error, setError] = React.useState<StorageFlowError | null>(
+            null,
+          );
 
           return {
             upload: async ({ file, input, ...args }) => {
@@ -59,7 +62,10 @@ export const createStorageFlowReact = <TRouter extends StorageRouter>(args?: {
                 setError(null);
 
                 if (!client[route]) {
-                  throw new Error(`Route ${route} not found`);
+                  throw new StorageFlowError(
+                    "NOT_FOUND",
+                    `Route ${route} not found`,
+                  );
                 }
 
                 const result = await client[route].upload({
@@ -83,12 +89,17 @@ export const createStorageFlowReact = <TRouter extends StorageRouter>(args?: {
                 };
               } catch (e) {
                 setStatus("error");
-
-                const err = e instanceof Error ? e : new Error("Unknown error");
-
-                setError(err);
                 setData({});
 
+                const err =
+                  e instanceof StorageFlowError
+                    ? e
+                    : e instanceof Error
+                      ? new StorageFlowError("UNKNOWN_ERROR", e.message)
+                      : new StorageFlowError("UNKNOWN_ERROR", "Unknown error");
+
+                setError(err);
+                setError(err);
                 args.onError?.(err);
 
                 return {

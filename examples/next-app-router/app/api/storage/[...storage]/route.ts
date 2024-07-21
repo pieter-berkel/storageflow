@@ -5,14 +5,7 @@ import {
 import { AWSProvider } from "@storageflow/server/provider/aws";
 
 const router = createStorageRouter((storage) => ({
-  banner: storage()
-    .fileSizeLimit(10 * 1024 * 1024) // 10MB
-    .middleware(async ({ request }) => {
-      return {
-        hello: "world",
-      };
-    })
-    .path(({ metadata }) => `/${metadata.hello}`),
+  banner: storage().fileSizeLimit(10 * 1024 * 1024),
 }));
 
 export type StorageRouter = typeof router;

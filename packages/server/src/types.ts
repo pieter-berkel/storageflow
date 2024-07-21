@@ -1,11 +1,13 @@
+import type { ErrorName } from "@storageflow/shared";
+
 export type SuccessResponse<TData = any> = {
   status: "success";
 } & TData;
 
 export type ErrorResponse = {
   status: "error";
-  code: string;
-  detail?: string;
+  name: ErrorName;
+  message: string;
   fields?: Record<string, string[]>;
 };
 

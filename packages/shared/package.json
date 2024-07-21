@@ -1,5 +1,5 @@
 {
-  "name": "@storageflow/client",
+  "name": "@storageflow/shared",
   "version": "0.1.0",
   "private": false,
   "type": "module",
@@ -7,9 +7,6 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./react": {
-      "import": "./dist/react/index.js"
     }
   },
   "types": "./dist/index.d.ts",
@@ -21,19 +18,11 @@
     "clean": "git clean -xdf .turbo dist node_modules",
     "dev": "tsup --watch"
   },
-  "dependencies": {
-    "zod": "^3.23.8"
-  },
-  "peerDependencies": {
-    "react": ">=18"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@storageflow/eslint-config": "workspace:*",
-    "@storageflow/server": "workspace:*",
     "@storageflow/ts-config": "workspace:*",
-    "@storageflow/shared": "workspace:*",
     "@types/node": "^20.14.11",
-    "@types/react": "^18.3.3",
     "eslint": "^9.7.0",
     "react": "^18.3.1",
     "tsup": "^8.2.0",

@@ -1,6 +1,7 @@
+import { StorageFlowError } from "@storageflow/shared";
+
 import type { StorageRouter } from "./router";
 import type { Provider } from "~/provider/types";
-import { StorageflowError } from "./error";
 
 export type CompleteMultipartUploadBody = {
   route: string;
@@ -28,10 +29,7 @@ export const completeMultipartUpload = async (
   const route = router[body.route];
 
   if (!route) {
-    throw new StorageflowError({
-      code: "NOT_FOUND",
-      message: `Route ${body.route} not found`,
-    });
+    throw new StorageFlowError("NOT_FOUND", `Route ${body.route} not found`);
   }
 
   return await provider.completeMultipartUpload({

@@ -52,6 +52,7 @@
     "@aws-sdk/s3-request-presigner": "^3.616.0",
     "@storageflow/eslint-config": "workspace:*",
     "@storageflow/ts-config": "workspace:*",
+    "@storageflow/shared": "workspace:*",
     "@types/lodash": "^4.17.7",
     "@types/node": "^20.14.11",
     "eslint": "^9.7.0",

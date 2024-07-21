@@ -19,6 +19,10 @@ export default function Page() {
     upload({
       file,
       onError(error) {
+        if (error.name === "FILE_LIMIT_EXCEEDED") {
+          return toast.error("Het bestand is te groot");
+        }
+
         toast.error(error.message);
       },
       onSuccess(data) {

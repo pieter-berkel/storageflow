@@ -1,8 +1,9 @@
+import { StorageFlowError } from "@storageflow/shared";
+
 import type { StorageRouter } from "~/core/router";
 import type { Provider } from "~/provider/types";
 import { generateUniqueFilename } from "~/utils";
 import { FileInfo, fileInfoSchema } from "~/validations";
-import { StorageflowError } from "./error";
 
 export type RequestUploadBody = {
   route: string;
@@ -50,10 +51,7 @@ export const requestUpload = async (
   const route = router[body.route];
 
   if (!route) {
-    throw new StorageflowError({
-      code: "NOT_FOUND",
-      message: `Route ${body.route} not found`,
-    });
+    throw new StorageFlowError("NOT_FOUND", `Route ${body.route} not found`);
   }
 
   const fileInfo = fileInfoSchema.parse(body.fileInfo);
@@ -71,32 +69,25 @@ export const requestUpload = async (
     });
 
     if (!accepted) {
-      throw new StorageflowError({
-        code: "BAD_REQUEST",
-        message: `File type ${fileInfo.type} is not allowedMimeTypesed`,
-      });
+      throw new StorageFlowError(
+        "BAD_REQUEST",
+        `File type ${fileInfo.type} is not a allowed mime type`,
+      );
     }
   }
 
   const fileSizeLimit = route._def.fileSizeLimit;
   if (fileSizeLimit !== Infinity && fileInfo.size > fileSizeLimit) {
-    throw new StorageflowError({
-      code: "FILE_LIMIT_EXCEEDED",
-      message: `File size ${fileInfo.size} is larger than max size ${fileSizeLimit}`,
-    });
+    throw new StorageFlowError(
+      "FILE_LIMIT_EXCEEDED",
+      `File size ${fileInfo.size} is larger than max size ${fileSizeLimit}`,
+    );
   }
 
   let input;
   const inputSchema = route._def.input;
   if (inputSchema) {
-    const inputResult = inputSchema.safeParse(body.input);
-
-    if (!inputResult.success) {
-      // TODO: improve error
-      throw new Error(`Invalid input: ${inputResult.error}`);
-    }
-
-    input = inputResult.data;
+    input = inputSchema.parse(body.input);
   }
 
   let metadata;

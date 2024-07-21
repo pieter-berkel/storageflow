@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
+import { StorageFlowError } from "@storageflow/shared";
+
 import type { RequestUploadResponse } from "~/core/request-upload";
 import type { StorageRouter } from "~/core/router";
 import type { Provider } from "~/provider/types";
 import type { ErrorResponse, SuccessResponse } from "~/types";
 import { completeMultipartUpload } from "~/core/complete-multipart-upload";
-import { StorageflowError } from "~/core/error";
 import { requestUpload } from "~/core/request-upload";
 import { AWSProvider } from "~/provider/aws";
 
@@ -55,32 +56,32 @@ export const createStorageHandler = (config: StorageHandlerConfig) => {
       if (error instanceof ZodError) {
         return NextResponse.json<ErrorResponse>({
           status: "error",
-          code: "BAD_REQUEST",
-          detail: "Invalid input",
+          name: "BAD_REQUEST",
+          message: "Invalid input",
           fields: error.flatten().fieldErrors as Record<string, string[]>,
         });
       }
 
-      if (error instanceof StorageflowError) {
+      if (error instanceof StorageFlowError) {
         return NextResponse.json<ErrorResponse>({
           status: "error",
-          code: error.code,
-          detail: error.message,
+          name: error.name,
+          message: error.message,
         });
       }
 
       if (error instanceof Error) {
         return NextResponse.json<ErrorResponse>({
           status: "error",
-          code: "INTERNAL_SERVER_ERROR",
-          detail: error.message,
+          name: "INTERNAL_SERVER_ERROR",
+          message: error.message,
         });
       }
 
       return NextResponse.json<ErrorResponse>({
         status: "error",
-        code: "INTERNAL_SERVER_ERROR",
-        detail: "Internal server error",
+        name: "INTERNAL_SERVER_ERROR",
+        message: "Internal server error",
       });
     }
   };

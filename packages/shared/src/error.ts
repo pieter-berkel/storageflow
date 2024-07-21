@@ -1,5 +1,6 @@
 export const ERROR_CODES = {
   // Generic
+  UNKNOWN_ERROR: 500,
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
   FORBIDDEN: 403,
@@ -19,16 +20,13 @@ export const ERROR_CODES = {
   FILE_LIMIT_EXCEEDED: 500,
 } as const;
 
-type ErrorCode = keyof typeof ERROR_CODES;
+export type ErrorName = keyof typeof ERROR_CODES;
 
-export class StorageflowError extends Error {
-  public override readonly cause?: unknown;
-  public readonly code: ErrorCode;
+export class StorageFlowError extends Error {
+  public override readonly name: ErrorName;
 
-  constructor(opts: { message: string; code: ErrorCode; cause?: Error }) {
-    super(opts.message);
-    this.name = "StorageflowError";
-    this.code = opts.code;
-    this.cause = opts.cause;
+  constructor(name: ErrorName, message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = name;
   }
 }

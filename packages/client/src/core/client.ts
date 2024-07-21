@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { AnyInput, StorageRouter } from "@storageflow/server";
+import { StorageFlowError } from "@storageflow/shared";
 
 import { getFileInfo } from "../lib/utils";
 import { createStorageFlowApiClient } from "./api-client";
@@ -43,7 +44,7 @@ export const createStorageFlowClient = <TRouter extends StorageRouter>(args?: {
 
           if (result.status === "error") {
             // TODO: check if error contains fields
-            throw new Error(result.detail);
+            throw new StorageFlowError(result.name, result.message);
           }
 
           if (result.type === "single") {
