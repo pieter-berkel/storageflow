@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
-    "clean": "rm -rf .turbo .next node_modules",
+    "clean": "git clean -xdf .turbo .next node_modules",
     "start": "next start",
     "lint": "next lint"
   },

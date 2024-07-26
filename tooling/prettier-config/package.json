@@ -7,7 +7,7 @@
     ".": "./index.js"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules"
+    "clean": "git clean -xdf .turbo node_modules"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
