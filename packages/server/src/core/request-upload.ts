@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { StorageFlowError } from "@storageflow/shared";
 
 import type { StorageRouter } from "~/core/router";
@@ -93,34 +95,42 @@ export const requestUpload = async (
   let metadata;
   const middleware = route._def.middleware;
   if (middleware) {
-    try {
-      // @ts-expect-error input is always never in router, fix there
-      metadata = await middleware({ input, request, response: undefined });
-    } catch (error) {
-      // TODO: improve error
-      throw new Error(`Middleware error: ${error}`);
-    }
+    // @ts-expect-error input is always never in router, fix there
+    metadata = await middleware({ input, request, response: undefined });
   }
 
   let dir = `/${body.route}`;
   const path = route._def.path;
   if (path) {
-    try {
-      // @ts-expect-error input is always never in router, fix there
-      const subdir = await path({ input, metadata });
+    // @ts-expect-error input is always never in router, fix there
+    const parts = await path({ input, metadata });
 
-      // TODO: check if subdir is valid
+    if (parts !== undefined && !Array.isArray(parts)) {
+      throw new StorageFlowError(
+        "INTERNAL_SERVER_ERROR",
+        "Path function must return an array or undefined",
+      );
+    }
 
-      if (subdir) {
-        if (subdir.startsWith("/")) {
-          dir += subdir;
-        } else {
-          dir += `/${subdir}`;
+    if (parts) {
+      const schema = z
+        .string()
+        .trim()
+        .min(1)
+        .regex(/^[\w!\-.*'()]*$/gm);
+
+      for (const part of parts) {
+        const result = schema.safeParse(part);
+
+        if (!result.success) {
+          throw new StorageFlowError(
+            "INTERNAL_SERVER_ERROR",
+            `Path part ${part} is not valid`,
+          );
         }
+
+        dir += `/${result.data}`;
       }
-    } catch (error) {
-      // TODO: improve error
-      throw new Error(`Path error: ${error}`);
     }
   }
 

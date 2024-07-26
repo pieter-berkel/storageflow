@@ -34,7 +34,7 @@ export type Path<
 > = (params: {
   input: z.infer<TInput>;
   metadata: Awaited<ReturnType<TMiddleware>>;
-}) => string | undefined;
+}) => string[];
 
 export type AnyPath = Path<never, AnyMiddleware>;
 
@@ -135,7 +135,7 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
     fileSizeLimit: Infinity,
     input: z.never().nullish(),
     middleware: () => ({}),
-    path: () => undefined,
+    path: () => [],
     ...initDef,
   };
 

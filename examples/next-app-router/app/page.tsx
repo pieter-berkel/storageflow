@@ -18,6 +18,9 @@ export default function Page() {
 
     upload({
       file,
+      input: {
+        categoryID: "abraham",
+      },
       onError(error) {
         if (error.name === "FILE_LIMIT_EXCEEDED") {
           return toast.error("Het bestand is te groot");

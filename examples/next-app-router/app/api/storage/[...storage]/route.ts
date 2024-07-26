@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   createStorageHandler,
   createStorageRouter,
@@ -5,7 +7,14 @@ import {
 import { AWSProvider } from "@storageflow/server/provider/aws";
 
 const router = createStorageRouter((storage) => ({
-  banner: storage().fileSizeLimit(10 * 1024 * 1024),
+  banner: storage()
+    .allowedMimeTypes(["image/png", "image/jpeg"])
+    .input(
+      z.object({
+        categoryID: z.string(),
+      }),
+    )
+    .path(({ input }) => [input.categoryID]),
 }));
 
 export type StorageRouter = typeof router;
