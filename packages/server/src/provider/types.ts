@@ -1,4 +1,4 @@
-import type { RequestUploadResponse } from "~/core/request-upload";
+import type { RequestUploadResponse } from "~/core/controller";
 import type { FileInfo } from "~/validations";
 
 type RequestUploadArgs = {

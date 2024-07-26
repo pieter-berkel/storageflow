@@ -1,4 +1,4 @@
-import { z } from "zod";
+import type { z } from "zod";
 
 import type { AnyInput, StorageRouter } from "@storageflow/server";
 import { StorageFlowError } from "@storageflow/shared";
