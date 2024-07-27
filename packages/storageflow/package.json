@@ -1,0 +1,77 @@
+{
+  "name": "storageflow",
+  "version": "0.1.0",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./adapters": {
+      "require": "./dist/adapters/index.js",
+      "import": "./dist/adapters/index.mjs",
+      "types": "./dist/adapters/index.d.ts"
+    },
+    "./providers": {
+      "require": "./dist/providers/index.js",
+      "import": "./dist/providers/index.mjs",
+      "types": "./dist/providers/index.d.ts"
+    },
+    "./clients": {
+      "require": "./dist/clients/index.js",
+      "import": "./dist/clients/index.mjs",
+      "types": "./dist/clients/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "git clean -xdf .turbo dist node_modules",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-s3": ">=3.0.0",
+    "@aws-sdk/s3-request-presigner": ">=3.0.0",
+    "next": "*",
+    "react": ">=18",
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-s3": {
+      "optional": true
+    },
+    "@aws-sdk/s3-request-presigner": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3.616.0",
+    "@aws-sdk/s3-request-presigner": "^3.616.0",
+    "@storageflow/eslint-config": "workspace:*",
+    "@storageflow/ts-config": "workspace:*",
+    "@types/lodash": "^4.17.7",
+    "@types/node": "^20.14.11",
+    "@types/react": "^18.3.3",
+    "eslint": "^9.7.0",
+    "next": "14.2.4",
+    "react": "^18.3.1",
+    "tsup": "^8.2.0",
+    "typescript": "^5.5.3",
+    "zod": "^3.23.8"
+  }
+}

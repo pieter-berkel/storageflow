@@ -23,12 +23,6 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.616.0
         version: 3.616.0
-      '@storageflow/client':
-        specifier: workspace:*
-        version: link:../../packages/client
-      '@storageflow/server':
-        specifier: workspace:*
-        version: link:../../packages/server
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -56,6 +50,9 @@ importers:
       sonner:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      storageflow:
+        specifier: workspace:*
+        version: link:../../packages/storageflow
       tailwind-merge:
         specifier: ^2.4.0
         version: 2.4.0
@@ -103,12 +100,6 @@ importers:
       '@storageflow/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
-      '@storageflow/server':
-        specifier: workspace:*
-        version: link:../server
-      '@storageflow/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@storageflow/ts-config':
         specifier: workspace:*
         version: link:../../tooling/ts-config
@@ -131,7 +122,7 @@ importers:
         specifier: ^5.5.3
         version: 5.5.3
 
-  packages/server:
+  packages/storageflow:
     dependencies:
       lodash:
         specifier: ^4.17.21
@@ -146,9 +137,6 @@ importers:
       '@storageflow/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
-      '@storageflow/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@storageflow/ts-config':
         specifier: workspace:*
         version: link:../../tooling/ts-config
@@ -158,36 +146,15 @@ importers:
       '@types/node':
         specifier: ^20.14.11
         version: 20.14.11
+      '@types/react':
+        specifier: ^18.3.3
+        version: 18.3.3
       eslint:
         specifier: ^9.7.0
         version: 9.7.0
       next:
         specifier: 14.2.4
         version: 14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      tsup:
-        specifier: ^8.2.0
-        version: 8.2.0(jiti@1.21.6)(postcss@8.4.39)(typescript@5.5.3)(yaml@2.4.5)
-      typescript:
-        specifier: ^5.5.3
-        version: 5.5.3
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
-
-  packages/shared:
-    devDependencies:
-      '@storageflow/eslint-config':
-        specifier: workspace:*
-        version: link:../../tooling/eslint-config
-      '@storageflow/ts-config':
-        specifier: workspace:*
-        version: link:../../tooling/ts-config
-      '@types/node':
-        specifier: ^20.14.11
-        version: 20.14.11
-      eslint:
-        specifier: ^9.7.0
-        version: 9.7.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -197,6 +164,9 @@ importers:
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
 
   tooling/eslint-config:
     devDependencies:

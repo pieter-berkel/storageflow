@@ -1,12 +1,8 @@
+import { next } from "storageflow/adapters";
+import { AWSProvider } from "storageflow/providers";
 import { z } from "zod";
 
-import {
-  createStorageHandler,
-  createStorageRouter,
-} from "@storageflow/server/next";
-import { AWSProvider } from "@storageflow/server/provider/aws";
-
-const router = createStorageRouter((storage) => ({
+const router = next.router((storage) => ({
   banner: storage()
     .allowedMimeTypes(["image/png", "image/jpeg"])
     .input(
@@ -19,7 +15,7 @@ const router = createStorageRouter((storage) => ({
 
 export type StorageRouter = typeof router;
 
-const handler = createStorageHandler({
+const handler = next.handler({
   provider: AWSProvider(),
   router: router,
 });
