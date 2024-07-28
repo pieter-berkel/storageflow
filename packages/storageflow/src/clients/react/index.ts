@@ -1,9 +1,9 @@
 import * as React from "react";
 import { z } from "zod";
 
+import { node } from "~/clients";
 import { StorageRouter } from "~/core/router";
 import { StorageFlowError } from "~/lib/error";
-import { createStorageFlowClient } from "../node";
 
 type UploadStatus = "idle" | "loading" | "error" | "success";
 
@@ -33,7 +33,7 @@ type RouteFunctions<TRouter extends StorageRouter> = {
 const client = <TRouter extends StorageRouter>(args?: { baseUrl?: string }) => {
   const { baseUrl } = args ?? {};
 
-  const client = createStorageFlowClient({
+  const client = node.client({
     baseUrl,
   });
 

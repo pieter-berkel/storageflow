@@ -11,9 +11,8 @@ const router = next.router((storage) => ({
       }),
     )
     .path(({ input }) => [input.categoryID]),
+  nothing: storage(),
 }));
-
-export type StorageRouter = typeof router;
 
 const handler = next.handler({
   provider: AWSProvider(),
@@ -21,3 +20,4 @@ const handler = next.handler({
 });
 
 export { handler as GET, handler as POST };
+export type StorageRouter = typeof router;
