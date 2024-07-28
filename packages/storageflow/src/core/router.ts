@@ -8,7 +8,7 @@ export type FileSizeLimit = number;
 
 export type AnyFileSizeLimit = FileSizeLimit;
 
-export type AnyInput = z.ZodTypeAny | z.ZodNever;
+export type AnyInput = z.ZodTypeAny | null;
 
 export type MiddlewareArgs<TRequest, TResponse> = {
   request: TRequest;
@@ -23,20 +23,20 @@ export type Middleware<
 > = (params: {
   request: TMiddlewareArgs["request"];
   response: TMiddlewareArgs["response"];
-  input: z.infer<TInput>;
+  input: TInput extends z.ZodTypeAny ? z.infer<TInput> : never;
 }) => any;
 
-export type AnyMiddleware = Middleware<AnyMiddlewareArgs, never> | null;
+export type AnyMiddleware = Middleware<AnyMiddlewareArgs, AnyInput> | null;
 
 export type Path<TInput extends AnyInput, TMiddleware extends AnyMiddleware> = (
   params: {
-    input: z.infer<TInput>;
-  } & (TMiddleware extends NonNullable<AnyMiddleware>
-    ? { context: Awaited<ReturnType<TMiddleware>> }
-    : { context?: never }),
+    input: TInput extends z.ZodTypeAny ? z.infer<TInput> : never;
+  } & (TMiddleware extends null
+    ? never
+    : { context: Awaited<ReturnType<NonNullable<TMiddleware>>> }),
 ) => string[];
 
-export type AnyPath = Path<never, AnyMiddleware>;
+export type AnyPath = Path<AnyInput, AnyMiddleware> | null;
 
 export type Def<
   TallowedMimeTypes extends AnyallowedMimeTypes,
@@ -133,9 +133,9 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
   const _def: AnyDef = {
     allowedMimeTypes: undefined,
     fileSizeLimit: Infinity,
-    input: z.never().nullish(),
+    input: null,
     middleware: null,
-    path: () => [],
+    path: null,
     ...initDef,
   };
 

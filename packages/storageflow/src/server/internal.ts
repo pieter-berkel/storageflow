@@ -91,18 +91,16 @@ export const requestUpload = async (
     input = inputSchema.parse(body.input);
   }
 
-  let metadata;
+  let context;
   const middleware = route._def.middleware;
   if (middleware) {
-    // @ts-expect-error input is always never in router, fix there
-    metadata = await middleware({ input, request, response: undefined });
+    context = await middleware({ input, request, response: undefined });
   }
 
   let dir = `/${body.route}`;
   const path = route._def.path;
   if (path) {
-    // @ts-expect-error input is always never in router, fix there
-    const parts = await path({ input, metadata });
+    const parts = await path({ input, context });
 
     if (parts !== undefined && !Array.isArray(parts)) {
       throw new StorageFlowError(

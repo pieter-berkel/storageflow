@@ -5,15 +5,15 @@ import type { Provider } from "~/providers/types";
 
 export type UploadArgs<
   TInput extends AnyInput,
-  TContext extends AnyMiddleware | undefined,
+  TMiddleware extends AnyMiddleware,
 > = {
   file: File;
-} & (TInput extends z.ZodNever
-  ? { input?: never }
-  : { input: z.infer<TInput> }) &
-  (TContext extends undefined
+} & (TInput extends z.ZodType
+  ? { input: z.infer<TInput> }
+  : { input?: never }) &
+  (TMiddleware extends null
     ? { context?: never }
-    : { context: Awaited<ReturnType<TContext>> });
+    : { context: Awaited<ReturnType<NonNullable<TMiddleware>>> });
 
 type ServerProxy<TRouter extends StorageRouter> = {
   [K in keyof TRouter]: {

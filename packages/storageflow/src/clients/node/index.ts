@@ -1,16 +1,14 @@
 import type { z } from "zod";
 
-import type { StorageRouter } from "~/core/router";
+import type { AnyInput, StorageRouter } from "~/core/router";
 import { createAPI } from "~/core/api";
 import { StorageFlowError } from "~/lib/error";
 import { getFileInfo, queuedPromises, uploadWithProgress } from "~/lib/utils";
 
-export type UploadArgs<TInput extends z.ZodTypeAny> = {
+export type UploadArgs<TInput extends AnyInput> = {
   file: File;
   onProgressChange?: (progress: number) => void;
-} & (TInput extends z.ZodNever
-  ? { input?: never }
-  : { input: z.infer<TInput> });
+} & (TInput extends z.ZodType ? { input: z.infer<TInput> } : { input?: never });
 
 type RouteFunctions<TRouter extends StorageRouter> = {
   [K in keyof TRouter]: {

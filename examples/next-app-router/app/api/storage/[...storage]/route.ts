@@ -11,7 +11,14 @@ const router = next.router((storage) => ({
         categoryID: z.string(),
       }),
     )
-    .path(({ input }) => [input.categoryID]),
+    .middleware(({ input }) => {
+      return {
+        myCat: input.categoryID,
+        hi: "hello",
+        id: 1,
+      };
+    })
+    .path(({ input, context }) => [input.categoryID]),
   nothing: storage(),
 }));
 
@@ -31,6 +38,11 @@ sfAPI.banner.upload({
   }),
   input: {
     categoryID: "abraham",
+  },
+  context: {
+    hi: "hello",
+    myCat: "abraham",
+    id: 1,
   },
 });
 
