@@ -3,23 +3,22 @@ import { ZodError } from "zod";
 
 import type { ErrorResponse, SuccessResponse } from "~/core/api";
 import type { Provider } from "~/providers/types";
+import { builder, MiddlewareArgs, StorageRouter } from "~/core/router";
+import { StorageFlowError } from "~/lib/error";
+import { zodErrorToMessage } from "~/lib/utils";
 import {
   completeMultipartUpload,
   requestUpload,
   RequestUploadResponse,
-} from "~/adapters/shared";
-import { builder, MiddlewareArgs, StorageRouter } from "~/core/router";
-import { StorageFlowError } from "~/lib/error";
-import { zodErrorToMessage } from "~/lib/utils";
-import { AWSProvider } from "~/providers/aws";
+} from "~/server/internal";
 
 export type HandlerConfig = {
-  provider?: Provider;
+  provider: Provider;
   router: StorageRouter;
 };
 
 const handler = (config: HandlerConfig) => {
-  const { provider = AWSProvider(), router } = config;
+  const { provider, router } = config;
 
   return async (request: NextRequest) => {
     try {

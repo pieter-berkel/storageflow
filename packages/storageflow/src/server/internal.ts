@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import type { StorageRouter } from "~/core/router";
-import type { Provider } from "~/providers/types";
+import { StorageRouter } from "~/core/router";
 import { StorageFlowError } from "~/lib/error";
 import { generateUniqueFilename } from "~/lib/utils";
+import { Provider } from "~/providers/types";
 import { FileInfo, fileInfoSchema } from "~/validations";
 
 export type RequestUploadBody = {

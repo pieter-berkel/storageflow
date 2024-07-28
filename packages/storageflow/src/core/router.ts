@@ -26,15 +26,15 @@ export type Middleware<
   input: z.infer<TInput>;
 }) => any;
 
-export type AnyMiddleware = Middleware<AnyMiddlewareArgs, never>;
+export type AnyMiddleware = Middleware<AnyMiddlewareArgs, never> | null;
 
-export type Path<
-  TInput extends AnyInput,
-  TMiddleware extends AnyMiddleware,
-> = (params: {
-  input: z.infer<TInput>;
-  metadata: Awaited<ReturnType<TMiddleware>>;
-}) => string[];
+export type Path<TInput extends AnyInput, TMiddleware extends AnyMiddleware> = (
+  params: {
+    input: z.infer<TInput>;
+  } & (TMiddleware extends NonNullable<AnyMiddleware>
+    ? { context: Awaited<ReturnType<TMiddleware>> }
+    : { context?: never }),
+) => string[];
 
 export type AnyPath = Path<never, AnyMiddleware>;
 
@@ -134,7 +134,7 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
     allowedMimeTypes: undefined,
     fileSizeLimit: Infinity,
     input: z.never().nullish(),
-    middleware: () => ({}),
+    middleware: null,
     path: () => [],
     ...initDef,
   };

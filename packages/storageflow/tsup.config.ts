@@ -6,6 +6,7 @@ export default defineConfig((options) => ({
     "src/adapters/index.ts",
     "src/providers/index.ts",
     "src/clients/index.ts",
+    "src/server/index.ts",
   ],
   format: ["esm", "cjs"],
   dts: true,

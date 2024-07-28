@@ -1,11 +1,11 @@
 import type { ErrorName } from "~/lib/error";
+import { DEFAULT_BASE_URL } from "~/lib/constants";
 import {
   CompleteMultipartUploadBody,
   CompleteMultipartUploadResponse,
   RequestUploadBody,
   RequestUploadResponse,
-} from "~/adapters/shared";
-import { DEFAULT_BASE_URL } from "~/lib/constants";
+} from "~/server/internal";
 
 export type SuccessResponse<TData = any> = {
   status: "success";

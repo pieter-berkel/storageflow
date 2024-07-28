@@ -1,5 +1,5 @@
 import type { FileInfo } from "~/validations";
-import { RequestUploadResponse } from "~/adapters/shared";
+import { RequestUploadResponse } from "~/server/internal";
 
 type RequestUploadArgs = {
   fileInfo: FileInfo;
