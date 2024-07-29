@@ -2,12 +2,12 @@ import * as React from "react";
 import { z } from "zod";
 
 import { node } from "~/clients";
-import { StorageRouter } from "~/core/router";
+import { AnyInput, StorageRouter } from "~/core/router";
 import { StorageFlowError } from "~/lib/error";
 
 type UploadStatus = "idle" | "loading" | "error" | "success";
 
-type UseUpload<TInput extends z.ZodTypeAny> = () => {
+type UseUpload<TInput extends AnyInput> = () => {
   status: UploadStatus;
   data: { url?: string };
   error: StorageFlowError | null;
@@ -18,9 +18,9 @@ type UseUpload<TInput extends z.ZodTypeAny> = () => {
       onError?: (error: StorageFlowError) => void;
       onSuccess?: (data: { url: string }) => void;
       onProgressChange?: (progress: number) => void;
-    } & (TInput extends z.ZodNever
-      ? { input?: any }
-      : { input: z.infer<TInput> }),
+    } & (TInput extends z.ZodType
+      ? { input: z.infer<TInput> }
+      : { input?: never }),
   ) => Promise<{ url?: string; error?: StorageFlowError }>;
 };
 

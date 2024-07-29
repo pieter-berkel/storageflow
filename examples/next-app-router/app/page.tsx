@@ -19,7 +19,7 @@ export default function Page() {
     upload({
       file,
       input: {
-        categoryID: "abraham",
+        bannerId: 1,
       },
       onError(error) {
         if (error.name === "FILE_LIMIT_EXCEEDED") {

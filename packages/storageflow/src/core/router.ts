@@ -34,7 +34,7 @@ export type Path<TInput extends AnyInput, TMiddleware extends AnyMiddleware> = (
   } & (TMiddleware extends null
     ? never
     : { context: Awaited<ReturnType<NonNullable<TMiddleware>>> }),
-) => string[];
+) => (string | number)[];
 
 export type AnyPath = Path<AnyInput, AnyMiddleware> | null;
 

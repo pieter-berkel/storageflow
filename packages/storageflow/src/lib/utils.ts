@@ -40,6 +40,20 @@ export const getFileInfo = (file: File): FileInfo => ({
   type: file.type,
 });
 
+export const upload = async (file: File | Blob, url: string) => {
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type,
+    },
+    body: file,
+  });
+
+  const etag = response.headers.get("ETag");
+
+  return etag;
+};
+
 export const uploadWithProgress = async (
   file: File | Blob,
   url: string,

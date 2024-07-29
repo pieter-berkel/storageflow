@@ -15,9 +15,17 @@ export type RequestUploadBody = {
 type RequestUploadArgs = {
   router: StorageRouter;
   provider: Provider;
-  request: any;
   body: RequestUploadBody;
-};
+} & (
+  | {
+      request: any;
+      context?: never;
+    }
+  | {
+      request?: never;
+      context: any;
+    }
+);
 
 type RequestSingleUploadResponse = {
   url: string;
@@ -91,9 +99,9 @@ export const requestUpload = async (
     input = inputSchema.parse(body.input);
   }
 
-  let context;
+  let context = args.context;
   const middleware = route._def.middleware;
-  if (middleware) {
+  if (request && middleware) {
     context = await middleware({ input, request, response: undefined });
   }
 
@@ -110,7 +118,7 @@ export const requestUpload = async (
     }
 
     if (parts) {
-      const schema = z
+      const schema = z.coerce
         .string()
         .trim()
         .min(1)

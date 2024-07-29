@@ -2,6 +2,12 @@ import type { z } from "zod";
 
 import type { AnyInput, AnyMiddleware, StorageRouter } from "~/core/router";
 import type { Provider } from "~/providers/types";
+import {
+  getFileInfo,
+  queuedPromises,
+  upload,
+} from "~/lib/utils";
+import { completeMultipartUpload, requestUpload } from "./internal";
 
 export type UploadArgs<
   TInput extends AnyInput,
@@ -37,10 +43,69 @@ export const server = <TRouter extends StorageRouter>(config: {
 
       return {
         upload: async (args) => {
-          const { file, input } = args;
+          const { file, input, context } = args;
+
+          const result = await requestUpload({
+            router,
+            provider,
+            context,
+            body: {
+              route,
+              input,
+              fileInfo: getFileInfo(file),
+            },
+          });
+
+          if (result.type === "single") {
+            await upload(file, result.uploadUrl);
+          } else if (result.type === "multipart") {
+            const { parts, partSize, uploadId } = result.multipart;
+
+            const uploadPart = async (params: {
+              part: (typeof parts)[number];
+              chunk: Blob;
+            }) => {
+              const { part, chunk } = params;
+
+              const eTag = await upload(chunk, part.uploadUrl);
+
+              if (!eTag) {
+                throw new Error(
+                  "Failed to upload part. Etag is not available.",
+                );
+              }
+
+              return {
+                partNumber: part.partNumber,
+                eTag,
+              };
+            };
+
+            const completedParts = await queuedPromises({
+              items: parts.map((part) => ({
+                part,
+                chunk: file.slice(
+                  (part.partNumber - 1) * partSize,
+                  part.partNumber * partSize,
+                ),
+              })),
+              fn: uploadPart,
+            });
+
+            await completeMultipartUpload({
+              router,
+              provider,
+              body: {
+                route,
+                uploadId,
+                filepath: result.filepath,
+                parts: completedParts,
+              },
+            });
+          }
 
           return {
-            url: "",
+            url: result.url,
           };
         },
       };

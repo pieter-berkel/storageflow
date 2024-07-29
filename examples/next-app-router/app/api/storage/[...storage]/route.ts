@@ -1,3 +1,4 @@
+import { StorageFlowError } from "storageflow";
 import { next } from "storageflow/adapters";
 import { AWSProvider } from "storageflow/providers";
 import { server } from "storageflow/server";
@@ -8,17 +9,21 @@ const router = next.router((storage) => ({
     .allowedMimeTypes(["image/png", "image/jpeg"])
     .input(
       z.object({
-        categoryID: z.string(),
+        bannerId: z.number(),
       }),
     )
-    .middleware(({ input }) => {
+    .middleware(() => {
+      if (Math.random() > 0.5) {
+        throw new StorageFlowError("UNAUTHORIZED", "Unauthorized");
+      }
+
+      const user = { id: 1, name: "John Doe" };
+
       return {
-        myCat: input.categoryID,
-        hi: "hello",
-        id: 1,
+        user,
       };
     })
-    .path(({ input, context }) => [input.categoryID]),
+    .path(({ input, context }) => [context.user.id, input.bannerId]),
   nothing: storage(),
 }));
 
@@ -27,23 +32,9 @@ const handler = next.handler({
   router: router,
 });
 
-const sfAPI = server({
+export const storage = server({
   provider: AWSProvider(),
   router: router,
-});
-
-sfAPI.banner.upload({
-  file: new File([""], "test.png", {
-    type: "image/png",
-  }),
-  input: {
-    categoryID: "abraham",
-  },
-  context: {
-    hi: "hello",
-    myCat: "abraham",
-    id: 1,
-  },
 });
 
 export { handler as GET, handler as POST };
