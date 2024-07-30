@@ -2,12 +2,8 @@ import type { z } from "zod";
 
 import type { AnyInput, AnyMiddleware, StorageRouter } from "~/core/router";
 import type { Provider } from "~/providers/types";
-import {
-  getFileInfo,
-  queuedPromises,
-  upload,
-} from "~/lib/utils";
-import { completeMultipartUpload, requestUpload } from "./internal";
+import { getFileInfo, queuedPromises, upload } from "~/lib/utils";
+import { completeMultipartUpload, deleteFile, requestUpload } from "./internal";
 
 export type UploadArgs<
   TInput extends AnyInput,
@@ -29,6 +25,7 @@ type ServerProxy<TRouter extends StorageRouter> = {
         TRouter[K]["_def"]["middleware"]
       >,
     ) => Promise<{ url: string }>;
+    delete: (url: string | string[]) => Promise<void>;
   };
 };
 
@@ -107,6 +104,16 @@ export const server = <TRouter extends StorageRouter>(config: {
           return {
             url: result.url,
           };
+        },
+        delete: async (url) => {
+          await deleteFile({
+            router,
+            provider,
+            body: {
+              route,
+              url,
+            },
+          });
         },
       };
     },

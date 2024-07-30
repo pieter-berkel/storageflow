@@ -17,7 +17,7 @@ export default function Page() {
       },
     });
 
-    console.log(url);
+    await storage.banner.delete(url);
   };
 
   return (

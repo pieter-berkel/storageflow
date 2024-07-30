@@ -1,6 +1,8 @@
 import {
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
   PutObjectCommand,
   S3Client,
   UploadPartCommand,
@@ -141,6 +143,21 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
           Parts: parts.map((part, i) => ({
             ETag: part.eTag,
             PartNumber: part.partNumber,
+          })),
+        },
+      });
+
+      await s3Client.send(command);
+    },
+    delete: async (url: string | string[]) => {
+      const urls = Array.isArray(url) ? url : [url];
+      const keys = urls.map((url) => url.replace(`${baseUrl}/`, ""));
+
+      const command = new DeleteObjectsCommand({
+        Bucket: bucketName,
+        Delete: {
+          Objects: keys.map((key) => ({
+            Key: key,
           })),
         },
       });

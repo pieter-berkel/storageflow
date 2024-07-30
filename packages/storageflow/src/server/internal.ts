@@ -184,3 +184,30 @@ export const completeMultipartUpload = async (
     parts: body.parts,
   });
 };
+
+export type DeleteFileBody = {
+  route: string;
+  url: string | string[];
+};
+
+export type DeleteFileArgs = {
+  router: StorageRouter;
+  provider: Provider;
+  body: DeleteFileBody;
+};
+
+export type DeleteFileResponse = void;
+
+export const deleteFile = async (
+  args: DeleteFileArgs,
+): Promise<DeleteFileResponse> => {
+  const { router, provider, body } = args;
+
+  const route = router[body.route];
+
+  if (!route) {
+    throw new StorageFlowError("NOT_FOUND", `Route ${body.route} not found`);
+  }
+
+  return await provider.delete(body.url);
+};
