@@ -1,3 +1,13 @@
 {
-  "name": "@storageflow/ts-config"
+  "name": "@storageflow/ts-config",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base.json": "./base.json",
+    "./react.json": "./react.json"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .turbo node_modules"
+  }
 }
