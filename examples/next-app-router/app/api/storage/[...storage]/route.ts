@@ -7,6 +7,7 @@ import { z } from "zod";
 const router = next.router((storage) => ({
   banner: storage()
     .allowedMimeTypes(["image/png", "image/jpeg"])
+    .temporary()
     .input(
       z.object({
         bannerId: z.number(),

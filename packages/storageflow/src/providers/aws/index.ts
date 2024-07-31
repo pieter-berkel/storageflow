@@ -1,7 +1,6 @@
 import {
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
-  DeleteObjectCommand,
   DeleteObjectsCommand,
   PutObjectCommand,
   S3Client,
@@ -48,7 +47,7 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
   const s3Client = getS3Client(options);
 
   return {
-    requestUpload: async ({ fileInfo, filepath }) => {
+    requestUpload: async ({ fileInfo, filepath, temporary }) => {
       const key = filepath.startsWith("/") ? filepath.slice(1) : filepath;
 
       const MULTIPART_THRESHOLD = 10 * 1024 * 1024; // 10MB
@@ -68,6 +67,7 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
           Key: key,
           ACL: "public-read",
           ContentType: fileInfo.type,
+          Tagging: temporary ? "temporary=true" : undefined,
         });
 
         const { UploadId } = await s3Client.send(command);
@@ -117,17 +117,24 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
         ACL: "public-read",
         ContentLength: fileInfo.size,
         ContentType: fileInfo.type,
+        Tagging: temporary ? "temporary=true" : undefined,
       });
 
       const signedUrl = await getSignedUrl(s3Client, command, {
         expiresIn: 60 * 10, // 10 minutes
+        unhoistableHeaders: new Set(["x-amz-tagging"]),
       });
 
       return {
         type: "single",
         url: `${baseUrl}/${key}`,
-        uploadUrl: signedUrl,
         filepath,
+        upload: {
+          url: signedUrl,
+          headers: temporary
+            ? { "x-amz-tagging": "temporary=true" }
+            : undefined,
+        },
       };
     },
     completeMultipartUpload: async (params) => {

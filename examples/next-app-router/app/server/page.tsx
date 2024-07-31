@@ -16,8 +16,6 @@ export default function Page() {
         user: { id: 24, name: "Bob Doe" },
       },
     });
-
-    await storage.banner.delete(url);
   };
 
   return (

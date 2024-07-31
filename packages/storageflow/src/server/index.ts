@@ -54,7 +54,9 @@ export const server = <TRouter extends StorageRouter>(config: {
           });
 
           if (result.type === "single") {
-            await upload(file, result.uploadUrl);
+            await upload(file, result.upload.url, {
+              headers: result.upload.headers,
+            });
           } else if (result.type === "multipart") {
             const { parts, partSize, uploadId } = result.multipart;
 

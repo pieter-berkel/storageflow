@@ -5,6 +5,7 @@ type RequestUploadArgs = {
   fileInfo: FileInfo;
   filename: string;
   filepath: string;
+  temporary: boolean;
 };
 
 type CompleteMultipartUploadArgs = {

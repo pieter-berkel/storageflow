@@ -1,12 +1,16 @@
 import { z } from "zod";
 
-export type allowedMimeTypes = string[];
+export type AllowedMimeTypes = string[];
 
-export type AnyallowedMimeTypes = allowedMimeTypes;
+export type AnyAllowedMimeTypes = AllowedMimeTypes;
 
 export type FileSizeLimit = number;
 
 export type AnyFileSizeLimit = FileSizeLimit;
+
+export type Temporary = boolean;
+
+export type AnyTemporary = Temporary;
 
 export type AnyInput = z.ZodTypeAny | null;
 
@@ -39,22 +43,25 @@ export type Path<TInput extends AnyInput, TMiddleware extends AnyMiddleware> = (
 export type AnyPath = Path<AnyInput, AnyMiddleware> | null;
 
 export type Def<
-  TallowedMimeTypes extends AnyallowedMimeTypes,
+  TallowedMimeTypes extends AnyAllowedMimeTypes,
   TFileSizeLimit extends AnyFileSizeLimit,
+  TTemporary extends AnyTemporary,
   TInput extends AnyInput,
   TMiddleware extends AnyMiddleware,
   TPath extends AnyPath,
 > = {
   allowedMimeTypes?: TallowedMimeTypes;
   fileSizeLimit: TFileSizeLimit;
+  temporary: TTemporary;
   input: TInput;
   middleware: TMiddleware;
   path: TPath;
 };
 
 export type AnyDef = Def<
-  AnyallowedMimeTypes,
+  AnyAllowedMimeTypes,
   AnyFileSizeLimit,
+  AnyTemporary,
   AnyInput,
   AnyMiddleware,
   AnyPath
@@ -65,12 +72,13 @@ export type Builder<
   TMiddlewareArgs extends AnyMiddlewareArgs,
 > = {
   _def: TDef;
-  allowedMimeTypes: <TallowedMimeTypes extends allowedMimeTypes>(
+  allowedMimeTypes: <TallowedMimeTypes extends AllowedMimeTypes>(
     params: TallowedMimeTypes,
   ) => Builder<
     {
       allowedMimeTypes: TallowedMimeTypes;
       fileSizeLimit: TDef["fileSizeLimit"];
+      temporary: TDef["temporary"];
       input: TDef["input"];
       middleware: TDef["middleware"];
       path: TDef["path"];
@@ -83,6 +91,18 @@ export type Builder<
     {
       allowedMimeTypes: TDef["allowedMimeTypes"];
       fileSizeLimit: TFileSizeLimit;
+      temporary: TDef["temporary"];
+      input: TDef["input"];
+      middleware: TDef["middleware"];
+      path: TDef["path"];
+    },
+    TMiddlewareArgs
+  >;
+  temporary: () => Builder<
+    {
+      allowedMimeTypes: TDef["allowedMimeTypes"];
+      fileSizeLimit: TDef["fileSizeLimit"];
+      temporary: true;
       input: TDef["input"];
       middleware: TDef["middleware"];
       path: TDef["path"];
@@ -95,6 +115,7 @@ export type Builder<
     {
       allowedMimeTypes: TDef["allowedMimeTypes"];
       fileSizeLimit: TDef["fileSizeLimit"];
+      temporary: TDef["temporary"];
       input: TInput;
       middleware: TDef["middleware"];
       path: TDef["path"];
@@ -107,6 +128,7 @@ export type Builder<
     {
       allowedMimeTypes: TDef["allowedMimeTypes"];
       fileSizeLimit: TDef["fileSizeLimit"];
+      temporary: TDef["temporary"];
       input: TDef["input"];
       middleware: TMiddleware;
       path: TDef["path"];
@@ -119,6 +141,7 @@ export type Builder<
     {
       allowedMimeTypes: TDef["allowedMimeTypes"];
       fileSizeLimit: TDef["fileSizeLimit"];
+      temporary: TDef["temporary"];
       input: TDef["input"];
       middleware: TDef["middleware"];
       path: TPath;
@@ -133,6 +156,7 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
   const _def: AnyDef = {
     allowedMimeTypes: undefined,
     fileSizeLimit: Infinity,
+    temporary: false,
     input: null,
     middleware: null,
     path: null,
@@ -146,6 +170,9 @@ export const builder = <TMiddlewareArgs extends AnyMiddlewareArgs>(
     },
     fileSizeLimit: (fileSizeLimit) => {
       return builder({ ..._def, fileSizeLimit }) as any;
+    },
+    temporary: () => {
+      return builder({ ..._def, temporary: true }) as any;
     },
     input: (input) => {
       return builder({ ..._def, input }) as any;

@@ -40,11 +40,18 @@ export const getFileInfo = (file: File): FileInfo => ({
   type: file.type,
 });
 
-export const upload = async (file: File | Blob, url: string) => {
+export const upload = async (
+  file: File | Blob,
+  url: string,
+  options?: {
+    headers?: HeadersInit;
+  },
+) => {
   const response = await fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": file.type,
+      ...options?.headers,
     },
     body: file,
   });
@@ -57,17 +64,26 @@ export const upload = async (file: File | Blob, url: string) => {
 export const uploadWithProgress = async (
   file: File | Blob,
   url: string,
-  onProgressChange?: (progress: number) => void,
+  options?: {
+    onProgressChange?: (progress: number) => void;
+    headers?: HeadersInit;
+  },
 ) => {
   return new Promise<string | null>((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.open("PUT", url);
 
+    if (options?.headers) {
+      Object.entries(options.headers).forEach(([key, value]) => {
+        request.setRequestHeader(key, value);
+      });
+    }
+
     request.upload.addEventListener("progress", (e) => {
       if (e.lengthComputable) {
         // 2 decimal progress
         const progress = Math.round((e.loaded / e.total) * 10000) / 100;
-        onProgressChange?.(progress);
+        options?.onProgressChange?.(progress);
       }
     });
 

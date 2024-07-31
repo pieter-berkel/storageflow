@@ -31,7 +31,10 @@ type RequestSingleUploadResponse = {
   url: string;
   filepath: string;
   type: "single";
-  uploadUrl: string;
+  upload: {
+    url: string;
+    headers?: Record<string, string>;
+  };
 };
 
 type RequestMultipartUploadResponse = {
@@ -146,6 +149,7 @@ export const requestUpload = async (
     fileInfo,
     filename,
     filepath,
+    temporary: route._def.temporary,
   });
 };
 

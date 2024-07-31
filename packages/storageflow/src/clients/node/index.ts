@@ -45,7 +45,10 @@ const client = <TRouter extends StorageRouter>(args?: { baseUrl?: string }) => {
           }
 
           if (result.type === "single") {
-            await uploadWithProgress(file, result.uploadUrl, onProgressChange);
+            await uploadWithProgress(file, result.upload.url, {
+              onProgressChange,
+              headers: result.upload.headers,
+            });
           } else if (result.type === "multipart") {
             const { parts, partSize, uploadId } = result.multipart;
 
@@ -85,11 +88,9 @@ const client = <TRouter extends StorageRouter>(args?: { baseUrl?: string }) => {
                 onProgressChange?.(totalProgress);
               };
 
-              const eTag = await uploadWithProgress(
-                chunk,
-                part.uploadUrl,
-                handleMultipartProgress,
-              );
+              const eTag = await uploadWithProgress(chunk, part.uploadUrl, {
+                onProgressChange: handleMultipartProgress,
+              });
 
               if (!eTag) {
                 throw new Error(
