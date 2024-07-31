@@ -3,6 +3,7 @@ import {
   CreateMultipartUploadCommand,
   DeleteObjectsCommand,
   PutObjectCommand,
+  PutObjectTaggingCommand,
   S3Client,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
@@ -151,6 +152,24 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
             ETag: part.eTag,
             PartNumber: part.partNumber,
           })),
+        },
+      });
+
+      await s3Client.send(command);
+    },
+    confirm: async (url: string) => {
+      const key = url.replace(`${baseUrl}/`, "");
+
+      const command = new PutObjectTaggingCommand({
+        Bucket: bucketName,
+        Key: key,
+        Tagging: {
+          TagSet: [
+            {
+              Key: "temporary",
+              Value: "false",
+            },
+          ],
         },
       });
 

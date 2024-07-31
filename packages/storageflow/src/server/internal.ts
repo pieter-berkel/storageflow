@@ -189,6 +189,31 @@ export const completeMultipartUpload = async (
   });
 };
 
+export type ConfirmBody = {
+  route: string;
+  url: string;
+};
+
+export type ConfirmArgs = {
+  router: StorageRouter;
+  provider: Provider;
+  body: ConfirmBody;
+};
+
+export type ConfirmResponse = void;
+
+export const confirm = async (args: ConfirmArgs): Promise<ConfirmResponse> => {
+  const { router, provider, body } = args;
+
+  const route = router[body.route];
+
+  if (!route) {
+    throw new StorageFlowError("NOT_FOUND", `Route ${body.route} not found`);
+  }
+
+  return await provider.confirm(body.url);
+};
+
 export type DeleteFileBody = {
   route: string;
   url: string | string[];

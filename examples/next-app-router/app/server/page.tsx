@@ -13,9 +13,11 @@ export default function Page() {
         bannerId: 2,
       },
       context: {
-        user: { id: 24, name: "Bob Doe" },
+        user: { id: 2, name: "Bob Doe" },
       },
     });
+
+    await storage.banner.confirm(url);
   };
 
   return (
