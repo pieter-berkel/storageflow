@@ -1,5 +1,5 @@
 import type { FileInfo } from "~/validations";
-import { RequestUploadResponse } from "~/server/internal";
+import { GetFilesResponse, RequestUploadResponse } from "~/server/internal";
 
 type RequestUploadArgs = {
   fileInfo: FileInfo;
@@ -18,6 +18,7 @@ type CompleteMultipartUploadArgs = {
 };
 
 export type Provider = {
+  getFiles: (path?: string) => Promise<GetFilesResponse>;
   requestUpload: (args: RequestUploadArgs) => Promise<RequestUploadResponse>;
   completeMultipartUpload: (args: CompleteMultipartUploadArgs) => Promise<void>;
   confirm: (url: string) => Promise<void>;

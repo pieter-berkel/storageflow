@@ -2,6 +2,7 @@ import {
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   DeleteObjectsCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   PutObjectTaggingCommand,
   S3Client,
@@ -48,6 +49,20 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
   const s3Client = getS3Client(options);
 
   return {
+    getFiles: async (path = "") => {
+      const directory = path.startsWith("/") ? path.slice(1) : path;
+
+      const command = new ListObjectsV2Command({
+        Bucket: bucketName,
+        Prefix: directory,
+      });
+
+      const { Contents } = await s3Client.send(command);
+
+      return {
+        urls: Contents?.map(({ Key }) => `${baseUrl}/${Key}`) ?? [],
+      };
+    },
     requestUpload: async ({ fileInfo, filepath, temporary }) => {
       const key = filepath.startsWith("/") ? filepath.slice(1) : filepath;
 

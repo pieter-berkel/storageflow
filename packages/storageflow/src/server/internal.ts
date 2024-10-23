@@ -6,6 +6,90 @@ import { generateUniqueFilename } from "~/lib/utils";
 import { Provider } from "~/providers/types";
 import { FileInfo, fileInfoSchema } from "~/validations";
 
+export type GetFilesBody = {
+  route: string;
+  input: any;
+};
+
+export type GetFilesArgs = {
+  router: StorageRouter;
+  provider: Provider;
+  body: GetFilesBody;
+} & (
+  | {
+      request: any;
+      context?: never;
+    }
+  | {
+      request?: never;
+      context: any;
+    }
+);
+
+export type GetFilesResponse = {
+  urls: string[];
+};
+
+export const getFiles = async (
+  args: GetFilesArgs,
+): Promise<GetFilesResponse> => {
+  const { router, provider, body, request } = args;
+
+  const route = router[body.route];
+
+  if (!route) {
+    throw new StorageFlowError("NOT_FOUND", `Route ${body.route} not found`);
+  }
+
+  let input;
+  const inputSchema = route._def.input;
+  if (inputSchema) {
+    input = inputSchema.parse(body.input);
+  }
+
+  let context = args.context;
+  const middleware = route._def.middleware;
+  if (request && middleware) {
+    context = await middleware({ input, request, response: undefined });
+  }
+
+  let dir = `/${body.route}`;
+  const path = route._def.path;
+  if (path) {
+    const parts = await path({ input, context });
+
+    if (parts !== undefined && !Array.isArray(parts)) {
+      throw new StorageFlowError(
+        "INTERNAL_SERVER_ERROR",
+        "Path function must return an array or undefined",
+      );
+    }
+
+    if (parts) {
+      const schema = z.coerce
+        .string()
+        .trim()
+        .min(1)
+        .regex(/^[\w!\-.*'()]*$/gm);
+
+      for (const part of parts) {
+        const result = schema.safeParse(part);
+
+        if (!result.success) {
+          throw new StorageFlowError(
+            "INTERNAL_SERVER_ERROR",
+            `Path part ${part} is not valid`,
+          );
+        }
+
+        dir += `/${result.data}`;
+      }
+    }
+  }
+
+  return await provider.getFiles(dir);
+};
+
 export type RequestUploadBody = {
   route: string;
   fileInfo: FileInfo;

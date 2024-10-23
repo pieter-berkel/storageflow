@@ -18,7 +18,7 @@ export default function Page() {
     upload({
       file,
       input: {
-        username: "johndoe",
+        id: "123",
       },
       onProgressChange(progress) {
         console.log(progress);

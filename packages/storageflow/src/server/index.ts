@@ -7,8 +7,19 @@ import {
   completeMultipartUpload,
   confirm,
   deleteFile,
+  getFiles,
   requestUpload,
 } from "./internal";
+
+export type GetFilesArgs<
+  TInput extends AnyInput,
+  TMiddleware extends AnyMiddleware,
+> = (TInput extends z.ZodType
+  ? { input: z.infer<TInput> }
+  : { input?: never }) &
+  (TMiddleware extends null
+    ? { context?: never }
+    : { context: Awaited<ReturnType<NonNullable<TMiddleware>>> });
 
 export type UploadArgs<
   TInput extends AnyInput,
@@ -24,6 +35,12 @@ export type UploadArgs<
 
 type ServerProxy<TRouter extends StorageRouter> = {
   [K in keyof TRouter]: {
+    getFiles: (
+      args: GetFilesArgs<
+        TRouter[K]["_def"]["input"],
+        TRouter[K]["_def"]["middleware"]
+      >,
+    ) => Promise<{ urls: string[] }>;
     upload: (
       args: UploadArgs<
         TRouter[K]["_def"]["input"],
@@ -45,6 +62,23 @@ export const server = <TRouter extends StorageRouter>(config: {
       const route = key as string;
 
       return {
+        getFiles: async (args) => {
+          const { input, context } = args;
+
+          const { urls } = await getFiles({
+            router,
+            provider,
+            context,
+            body: {
+              route,
+              input,
+            },
+          });
+
+          return {
+            urls,
+          };
+        },
         upload: async (args) => {
           const { file, input, context } = args;
 

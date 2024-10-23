@@ -3,6 +3,8 @@ import { DEFAULT_BASE_URL } from "~/lib/constants";
 import {
   CompleteMultipartUploadBody,
   CompleteMultipartUploadResponse,
+  GetFilesBody,
+  GetFilesResponse,
   RequestUploadBody,
   RequestUploadResponse,
 } from "~/server/internal";
@@ -27,6 +29,14 @@ export const createAPI = (options?: { baseUrl?: string }) => {
     health: async () => {
       const response = await fetch(`${baseUrl}/health`);
       return (await response.text()) as "ok";
+    },
+    getFiles: async (body: GetFilesBody) => {
+      const response = await fetch(`${baseUrl}/get-files`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+
+      return (await response.json()) as ApiResponse<GetFilesResponse>;
     },
     requestUpload: async (body: RequestUploadBody) => {
       const response = await fetch(`${baseUrl}/request-upload`, {

@@ -5,6 +5,10 @@ import { createAPI } from "~/core/api";
 import { StorageFlowError } from "~/lib/error";
 import { getFileInfo, queuedPromises, uploadWithProgress } from "~/lib/utils";
 
+export type GetFilesArgs<TInput extends AnyInput> = {
+  input: TInput extends z.ZodType ? z.infer<TInput> : never;
+};
+
 export type UploadArgs<TInput extends AnyInput> = {
   file: File;
   onProgressChange?: (progress: number) => void;
@@ -12,6 +16,9 @@ export type UploadArgs<TInput extends AnyInput> = {
 
 type RouteFunctions<TRouter extends StorageRouter> = {
   [K in keyof TRouter]: {
+    getFiles: (args: GetFilesArgs<TRouter[K]["_def"]["input"]>) => Promise<{
+      urls: string[];
+    }>;
     upload: (
       args: UploadArgs<TRouter[K]["_def"]["input"]>,
     ) => Promise<{ url: string }>;
@@ -26,6 +33,27 @@ const client = <TRouter extends StorageRouter>(args?: { baseUrl?: string }) => {
       const route = key as string;
 
       return {
+        getFiles: async (args) => {
+          const { input } = args;
+
+          const api = createAPI({
+            baseUrl,
+          });
+
+          const result = await api.getFiles({
+            route,
+            input,
+          });
+
+          if (result.status === "error") {
+            // TODO: check if error contains fields
+            throw new StorageFlowError(result.name, result.message);
+          }
+
+          return {
+            urls: result.urls,
+          };
+        },
         upload: async (args) => {
           const { file, input, onProgressChange } = args;
 

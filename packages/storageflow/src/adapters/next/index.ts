@@ -8,6 +8,8 @@ import { StorageFlowError } from "~/lib/error";
 import { zodErrorToMessage } from "~/lib/utils";
 import {
   completeMultipartUpload,
+  getFiles,
+  GetFilesResponse,
   requestUpload,
   RequestUploadResponse,
 } from "~/server/internal";
@@ -26,6 +28,20 @@ const handler = (config: HandlerConfig) => {
 
       if (pathname.endsWith("/health")) {
         return new Response("ok", { status: 200 });
+      }
+
+      if (pathname.endsWith("/get-files")) {
+        const response = await getFiles({
+          router,
+          provider,
+          request,
+          body: await request.json(),
+        });
+
+        return NextResponse.json<SuccessResponse<GetFilesResponse>>({
+          status: "success",
+          ...response,
+        });
       }
 
       if (pathname.endsWith("/request-upload")) {
