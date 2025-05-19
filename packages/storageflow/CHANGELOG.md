@@ -1,5 +1,11 @@
 # storageflow
 
+## 0.2.0
+
+### Minor Changes
+
+- Added copy file option for server
+
 ## 0.1.4
 
 ### Patch Changes

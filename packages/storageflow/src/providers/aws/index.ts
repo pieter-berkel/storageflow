@@ -1,5 +1,6 @@
 import {
   CompleteMultipartUploadCommand,
+  CopyObjectCommand,
   CreateMultipartUploadCommand,
   DeleteObjectsCommand,
   ListObjectsV2Command,
@@ -201,6 +202,17 @@ export const AWSProvider = (options?: AWSProviderOptions): Provider => {
             Key: key,
           })),
         },
+      });
+
+      await s3Client.send(command);
+    },
+    copy: async (source: string, destionation: string) => {
+      const key = source.replace(`${baseUrl}/`, "");
+
+      const command = new CopyObjectCommand({
+        Bucket: bucketName,
+        CopySource: `${bucketName}/${key}`,
+        Key: destionation,
       });
 
       await s3Client.send(command);

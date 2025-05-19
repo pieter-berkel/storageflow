@@ -49,6 +49,7 @@ type ServerProxy<TRouter extends StorageRouter> = {
     ) => Promise<{ url: string }>;
     confirm: (url: string) => Promise<void>;
     delete: (url: string | string[]) => Promise<void>;
+    copy: (source: string, destination: string) => Promise<void>;
   };
 };
 
@@ -166,6 +167,9 @@ export const server = <TRouter extends StorageRouter>(config: {
               url,
             },
           });
+        },
+        copy: async (source, destination) => {
+          await provider.copy(source, destination);
         },
       };
     },

@@ -1,6 +1,6 @@
 {
   "name": "storageflow",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "private": false,
   "description": "StorageFlow is a TypeScript library designed for efficient and flexible file management. It currently supports a NextJS adapter and an AWS S3 provider, with plans for additional adapters and providers in the future. Developers can utilize three types of clients: a server client for uploading, confirming, and deleting files; a node client for uploading files; and a React hook for uploading files. The library also allows the creation of custom file routers with dynamic paths, dynamic inputs, and middleware, along with the capability to handle temporary file uploads until confirmation.",
   "repository": {

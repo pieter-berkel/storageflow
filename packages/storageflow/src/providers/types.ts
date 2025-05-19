@@ -23,4 +23,5 @@ export type Provider = {
   completeMultipartUpload: (args: CompleteMultipartUploadArgs) => Promise<void>;
   confirm: (url: string) => Promise<void>;
   delete: (url: string | string[]) => Promise<void>;
+  copy: (source: string, destination: string) => Promise<void>;
 };

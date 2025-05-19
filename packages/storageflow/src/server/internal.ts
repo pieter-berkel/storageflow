@@ -324,3 +324,31 @@ export const deleteFile = async (
 
   return await provider.delete(body.url);
 };
+
+export type CopyFileBody = {
+  route: string;
+  source: string;
+  destination: string;
+};
+
+export type CopyFileArgs = {
+  router: StorageRouter;
+  provider: Provider;
+  body: CopyFileBody;
+};
+
+export type CopyFileResponse = void;
+
+export const copyFile = async (
+  args: CopyFileArgs,
+): Promise<DeleteFileResponse> => {
+  const { router, provider, body } = args;
+
+  const route = router[body.route];
+
+  if (!route) {
+    throw new StorageFlowError("NOT_FOUND", `Route ${body.route} not found`);
+  }
+
+  return await provider.copy(body.source, body.destination);
+};
